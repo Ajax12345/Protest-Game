@@ -1,0 +1,49 @@
+.roboto{
+    font-family: 'Roboto', sans-serif;
+    font-size:40px;
+
+}
+.muli{
+    font-family: 'Muli', sans-serif;
+    font-size:40px;
+}
+.fira_sans{
+    font-family: 'Fira Sans', sans-serif;
+    font-size:40px;
+}
+body{
+    background-color:#e9ecef;
+}
+.header{
+    width:100%;
+    background-color:white;
+    border-bottom:solid;
+    border-width:2px;
+    border-color:#DDDDDD;
+    padding:8px;
+}
+.logged_in_user{
+    float:right;
+    text-decoration:underline;
+    font-family: 'Roboto', sans-serif;
+    font-size:17px;
+    margin-right:10px;
+
+}
+.logged_in_user:hover{
+    cursor:pointer;
+}
+.new_game{
+    font-family: 'Roboto', sans-serif;
+    font-size:20px;
+    color:white;
+    border-radius:30px;
+    padding:10px;
+    background-color:#E62C78;
+    width:55%;
+    text-align: center;
+    float:right;
+}
+.new_game:hover{
+    cursor:pointer;
+}

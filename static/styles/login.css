@@ -1,0 +1,62 @@
+.roboto{
+    font-family: 'Roboto', sans-serif;
+    font-size:40px;
+
+}
+.muli{
+    font-family: 'Muli', sans-serif;
+    font-size:40px;
+}
+.fira_sans{
+    font-family: 'Fira Sans', sans-serif;
+    font-size:40px;
+}
+body{
+    background-color:#e9ecef;
+}
+.login_pannel{
+    width:35%;
+    padding:15px;
+    border-radius:20px;
+    margin:0 auto;
+    background-color:white;
+}
+.header_text{
+    font-family: 'Roboto', sans-serif;
+    font-size:30px;
+    font-weight:bold;
+}
+.input_text{
+    width:100%;
+    font-family: 'Roboto', sans-serif;
+    font-size:20px;
+    border:none;
+    padding:6px;
+    background-color:#dfe3e7;
+    border-radius:30px;
+    padding-left:20px;
+    color:black;
+
+
+}
+.input_text:focus{
+    outline:none;
+}
+.input_field_header{
+    font-family: 'Roboto', sans-serif;
+    font-size:20px;
+   
+}
+.login_button{
+    font-family: 'Roboto', sans-serif;
+    font-size:20px;
+    color:white;
+    border-radius:30px;
+    padding:10px;
+    background-color:#E62C78;
+    width:25%;
+    text-align: center;
+}
+.login_button:hover{
+    cursor:pointer;
+}
