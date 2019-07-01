@@ -1,8 +1,16 @@
 import flask, random, string
-import game_user, json
+import game_user, json, pusher
 
 app = flask.Flask(__name__)
 app.secret_key = ''.join(random.choice(string.ascii_letters) for _ in range(30))
+
+pusher_client = pusher.Pusher(
+  app_id='....',
+  key='......',
+  secret='..........',
+  cluster='us2',
+  ssl=True
+)
 
 def is_loggedin(f):
     def wrapper(*args, **kwargs):
@@ -36,6 +44,15 @@ def login_user():
 @is_loggedin
 def game(val, tuser):
     return flask.render_template('game_pannel.html', val = val, user = game_user.TestUser.get_user(flask.session['id']), tuser = tuser)
+
+@app.route("/pusher/auth", methods=['POST'])
+def pusher_authentication():
+    # pusher_client is obtained through pusher.Pusher( ... )
+    auth = pusher_client.authenticate(
+        channel=flask.request.form['channel_name'],
+        socket_id=flask.request.form['socket_id']
+    )
+    return json.dumps(auth)
 
 @app.after_request
 def add_header(r):
