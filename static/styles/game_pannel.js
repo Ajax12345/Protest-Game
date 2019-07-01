@@ -1,4 +1,14 @@
 $(document).ready(function(){
+    Pusher.logToConsole = true;
+
+    var pusher = new Pusher('.............', {
+      cluster: 'us2',
+      forceTLS: true
+    });
+    var channel = pusher.subscribe('private-game-chat');
+    channel.bind('client-protest-chat'+$('.game_name').data('gameid'), function(data) {
+        render_message(data);
+    });
     function adjust_tds(){
         var h1 = parseInt($('.td_1_wrapper').css('height').match('\\d+'));
         var h2 = parseInt($('.td_2_wrapper').css('height').match('\\d+'));
@@ -43,19 +53,28 @@ $(document).ready(function(){
         if (mins < 10){
             mins = '0'+mins.toString();
         }
+        else{
+            mins = mins.toString();
+        }
         var _message = $('#chat_message_input').val();
+        $('#chat_message_input').val('');
         var _count = 0;
         $('.chat_message').each(function(){
             _count = 1;
         });
         if (_message.length > 0){
+            var _timestamp = h.toString()+':'+mins+" "+m;
+        
+            console.log({'poster':$('.logged_in_user').data('tuser'), 'timestamp':_timestamp, 'message':_message});
+            channel.trigger('client-protest-chat'+$('.game_name').data('gameid'), {'poster':$('.logged_in_user').data('tuser'), 'timestamp':_timestamp, 'message':_message});
+            
             //pass
             var _html = `
                 <div style='height:${_count*2+30}px'></div>
                 <div class='chat_message'>
                     <table>
                         <tr>
-                            <td><span class='chat_poster'>James Petullo</span></td>
+                            <td><span class='chat_poster'>${$('.logged_in_user').data('tuser')}</span></td>
                         
                             <td><div class='chat_timestamp'>${h}:${mins} ${m}</div></td>
                         </tr>
@@ -77,6 +96,59 @@ $(document).ready(function(){
             $('.no_messages_posted').remove();
             $('.inner_chat_pannel').append(_html);
         }
+    }
+    function add_new_message(){
+
+        var _date = new Date();
+        var h = _date.getHours();
+        var mins = _date.getMinutes();
+        var m = 'AM';
+        if (h > 12){
+            m = 'PM';
+            h -= 12;
+        }
+        if (mins < 10){
+            mins = '0'+mins.toString();
+        }
+        else{
+            mins = mins.toString();
+        }
+        var _message = $('#chat_message_input').val();
+        
+        
+        
+    }
+    function render_message(data){
+        var _count = 0;
+        $('.chat_message').each(function(){
+            _count = 1;
+        });
+        var _html = `
+                <div style='height:${_count*2+30}px'></div>
+                <div class='chat_message'>
+                    <table>
+                        <tr>
+                            <td><span class='chat_poster'>${data['poster']}</span></td>
+                        
+                            <td><div class='chat_timestamp'>${data['timestamp']}</div></td>
+                        </tr>
+                    </table>
+                    <div style='height:15px'></div>
+                    <table>
+                        <tr>
+                            <td><div class='message_dot'></div></td>
+                            <td>
+                                <span class='main_chat_message'>
+                                 ${data['message']}
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                </div>
+            `;
+            $('.no_messages_posted').remove();
+            $('.inner_chat_pannel').append(_html);
     }
     $('.message_input_box').on('click', '.add_message', function(){
         add_message();
