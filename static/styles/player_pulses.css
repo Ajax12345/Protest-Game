@@ -1,0 +1,114 @@
+.pulse {
+    display: block;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #cca92c;
+    cursor: pointer;
+    box-shadow: 0 0 0 rgba(204,169,44, 0.4);
+    animation: pulse 2s infinite;
+    margin:0 auto;
+  }
+  
+  
+  @-webkit-keyframes pulse {
+    0% {
+      -webkit-box-shadow: 0 0 0 0 rgba(204,169,44, 0.4);
+    }
+    70% {
+        -webkit-box-shadow: 0 0 0 30px rgba(204,169,44, 0);
+    }
+    100% {
+        -webkit-box-shadow: 0 0 0 0 rgba(204,169,44, 0);
+    }
+  }
+  @keyframes pulse {
+    0% {
+      -moz-box-shadow: 0 0 0 0 rgba(204,169,44, 0.4);
+      box-shadow: 0 0 0 0 rgba(204,169,44, 0.4);
+    }
+    70% {
+        -moz-box-shadow: 0 0 0 30px rgba(204,169,44, 0);
+        box-shadow: 0 0 0 10px rgba(204,169,44, 0);
+    }
+    100% {
+        -moz-box-shadow: 0 0 0 0 rgba(204,169,44, 0);
+        box-shadow: 0 0 0 0 rgba(204,169,44, 0);
+    }
+  }
+  .protester_pulse {
+    display: block;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgb(209, 47, 117);
+    cursor: pointer;
+    box-shadow: 0 0 0 rgb(212, 126, 163);
+    animation: pulse 2s infinite;
+    margin:0 auto;
+  }
+  
+  
+  @-webkit-keyframes protester_pulse {
+    0% {
+      -webkit-box-shadow: 0 0 0 0 rgb(212, 126, 163);
+    }
+    70% {
+        -webkit-box-shadow: 0 0 0 40px rgb(212, 126, 163);
+    }
+    100% {
+        -webkit-box-shadow: 0 0 0 0 rgb(212, 126, 163);
+    }
+  }
+  @keyframes protester_pulse {
+    0% {
+      -moz-box-shadow: 0 0 0 0 rgb(212, 126, 163);
+      box-shadow: 0 0 0 0 rgb(212, 126, 163);
+    }
+    70% {
+        -moz-box-shadow: 0 0 0 40px rgb(212, 126, 163);
+        box-shadow: 0 0 0 10px rgb(212, 126, 163);
+    }
+    100% {
+        -moz-box-shadow: 0 0 0 0 rgb(212, 126, 163);
+        box-shadow: 0 0 0 0 rgb(212, 126, 163);
+    }
+  }
+  .police_pulse {
+    display: block;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgb(74, 121, 198);
+    cursor: pointer;
+    box-shadow: 0 0 0 rgb(189, 223, 246);
+    animation: pulse 2s infinite;
+    margin:0 auto;
+  }
+  
+  
+  @-webkit-keyframes protester_pulse {
+    0% {
+      -webkit-box-shadow: 0 0 0 0 rgb(189, 223, 246);
+    }
+    70% {
+        -webkit-box-shadow: 0 0 0 40px rgb(189, 223, 246);
+    }
+    100% {
+        -webkit-box-shadow: 0 0 0 0 rgb(189, 223, 246);
+    }
+  }
+  @keyframes protester_pulse {
+    0% {
+      -moz-box-shadow: 0 0 0 0 rgb(189, 223, 246);
+      box-shadow: 0 0 0 0 rgb(189, 223, 246);
+    }
+    70% {
+        -moz-box-shadow: 0 0 0 40px rgb(189, 223, 246);
+        box-shadow: 0 0 0 10px rgb(189, 223, 246);
+    }
+    100% {
+        -moz-box-shadow: 0 0 0 0 rgb(189, 223, 246);
+        box-shadow: 0 0 0 0 rgb(189, 223, 246);
+    }
+  }
