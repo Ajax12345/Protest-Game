@@ -1,0 +1,223 @@
+.roboto{
+    font-family: 'Roboto', sans-serif;
+    font-size:40px;
+
+}
+.muli{
+    font-family: 'Muli', sans-serif;
+    font-size:40px;
+}
+.fira_sans{
+    font-family: 'Fira Sans', sans-serif;
+    font-size:40px;
+}
+body{
+    background-color:#1c1f2f;
+}
+.header{
+    width:100%;
+    background-color:#45475a;
+    padding:8px;
+}
+.logged_in_user{
+    float:right;
+    font-family: 'Roboto', sans-serif;
+    font-size:17px;
+    margin-right:10px;
+    color:white;
+
+}
+.logged_in_user:hover{
+    cursor:pointer;
+}
+.new_game{
+    font-family: 'Roboto', sans-serif;
+    font-size:20px;
+    color:white;
+    border-radius:30px;
+    padding:10px;
+    background-color:#E62C78;
+    width:55%;
+    text-align: center;
+    float:right;
+}
+.new_game:hover{
+    cursor:pointer;
+}
+.game_name{
+    font-family: 'Roboto', sans-serif;
+    font-size:30px;
+    font-weight:bold;
+    float:left;
+    color:white;
+}
+.badge{
+    float:right;
+    font-size:20px;
+    font-family: 'Roboto', sans-serif;
+    padding:10px;
+    border-radius:5px;
+}
+.badge_police{
+    background-color:rgb(189, 223, 246);
+    color:rgb(40, 84, 154);
+}
+.badge_protester{
+    background-color:rgb(248, 206, 224);
+    color:rgb(209, 47, 117);
+}
+.back_to_menu{
+    float:left;
+}
+.back_to_menu:hover{
+    cursor:pointer;
+}
+.game_display{
+    width:100%;
+    margin:0 auto;
+}
+.game_chat_wrapper{
+    width:100%;
+}
+.game_board_wrapper{
+    width:100%; 
+}
+.chat_table{
+    width:98%;
+    float:right;
+}
+.chat_header{
+    width:100%;
+    padding:7px;
+    border-bottom:solid;
+    border-bottom-width:1px;
+    border-bottom-color:black;
+    background-color:#45475a;
+    border-radius:10px;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+
+}
+.chat_header_text{
+    color:white;
+    font-family: 'Roboto', sans-serif;
+    font-size:22px;
+    font-weight:bold;
+}
+.chat_main{
+    max-height:400px;
+    padding:7px;
+    background-color:#45475a;
+    height:400px;
+    overflow:scroll;
+    
+}
+.chat_input_wrapper{
+    width:100%;
+    padding:15px;
+    background-color:#45475a;
+    border-radius:10px;
+    border-top-right-radius: 0px;
+    border-top-left-radius: 0px;
+}
+.channels_header{
+    width:100%;
+    padding:7px;
+    border-bottom:solid;
+    border-bottom-width:1px;
+    border-bottom-color:black;
+}
+.channels_header_text{
+    color:white;
+    font-family: 'Roboto', sans-serif;
+    font-size:22px;
+}
+.chat_channel_option{
+    font-family: 'Roboto', sans-serif;
+    color:rgb(188, 188, 188);
+    font-size:20px;
+    padding:6px;
+   
+    font-weight:bold;
+
+}
+.chat_channel_option:hover{
+    cursor:pointer;
+}
+.selected_channel{
+    background-color:#11111e;
+    color:white;
+}
+.post_message_box{
+    width:100%;
+    margin:0 auto;
+    font-family: 'Roboto', sans-serif;
+    font-size:18px;
+    padding:7px;
+    padding-top:13px;
+    padding-bottom:13px;
+    border-radius:7px;
+    border:none;
+    background-color:rgb(181, 179, 186);
+    color:rgb(39, 39, 40)
+}
+
+.on_input_placer{
+    font-family: 'Roboto', sans-serif;
+    color:rgb(63, 63, 64);
+    font-size:18px;
+}
+.input_section:hover{
+    cursor:text;
+}
+.main_input_box{
+    width:100%;
+    margin:0 auto;
+    font-family: 'Roboto', sans-serif;
+    font-size:18px;
+    border:none;
+    color:rgb(37, 37, 39);
+    background-color:rgb(181, 179, 186);
+
+}
+.main_input_box:focus{
+    outline:none;
+}
+.select_emogi_pannel{
+    float:right;
+}
+.select_emogi_pannel:hover{
+    cursor:pointer;
+}
+.emoji_display{
+    width:100%;
+    display:none;
+    
+}
+.emoji_span{
+    display: inline-block;
+    font-size:18px;
+}
+.emoji_span:hover{
+    cursor:pointer;
+}
+.poster_name{
+    font-family: 'Roboto', sans-serif;
+    font-size:16px;
+    color:white;
+    font-weight:bold;
+
+}
+.message_date{
+    font-size:13px;
+    font-family: 'Roboto', sans-serif;
+    color:rgb(158, 155, 155);
+    margin-left:5px;
+    margin-top:3px;
+}
+.message_text{
+    width:100%;
+    font-family: 'Roboto', sans-serif;
+    font-size:17px;
+    color:rgb(186, 183, 183);
+}
