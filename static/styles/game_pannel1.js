@@ -30,6 +30,24 @@ $(document).ready(function(){
             update_timer();
         }, 1000);
     }
+    function create_board(){
+       for (var i = 0; i < 18; i++){
+           var tr_html = `
+            <tr id='board_tr_${i}'></tr>
+           `;
+            $('.game_board_table').append(tr_html);
+            for (var b = 0; b < 20; b++){
+                var td_html =`
+                    <td class='game_board_td' id='board_td_{i}_{b}'><div class='board_cell' id='board_cell_${i}_${b}' data-x='${b}' data-y='${i}'></div></td>
+                `
+                $("#board_tr_"+i.toString()).append(td_html);
+            }
+       } 
+       $("#board_cell_3_4").html("<span class='protester_pulse'></span>")
+       $("#board_cell_4_4").html("<span class='protester_pulse'></span>")
+       $("#board_cell_2_17").html("<span class='police_pulse'></span>")
+    }
+    create_board();
     format_game_time();
     update_timer();
     function scroll_chat(){
@@ -182,4 +200,5 @@ $(document).ready(function(){
             add_message();
         }
     });
+    
 });
