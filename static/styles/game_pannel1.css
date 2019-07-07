@@ -29,6 +29,7 @@ body{
 }
 .logged_in_user:hover{
     cursor:pointer;
+    text-decoration: underline;
 }
 .new_game{
     font-family: 'Roboto', sans-serif;
@@ -81,6 +82,7 @@ body{
 }
 .game_board_wrapper{
     width:100%; 
+
 }
 .chat_table{
     width:98%;
@@ -224,7 +226,7 @@ body{
 }
 .full_board{
     width:95%;
-    height:600px;
+    height:700px;
     border-radius:10px;
     background-color:#45475a;
     margin:0 auto;
@@ -287,4 +289,23 @@ body{
     border-bottom-left-radius: 30px;
     float:right;
     height:25px;
+}
+.game_board{
+    width:100%;
+    background-color:#1c1f2f;
+    height:500px;
+    border-radius:10px;
+    padding:5px;
+}
+.game_board_table{
+    width:100%;
+}
+.game_board_td{
+    width:5%;
+
+}
+.board_cell{
+    width:100%;
+    padding:5px;
+    
 }
