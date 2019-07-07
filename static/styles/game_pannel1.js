@@ -10,6 +10,28 @@ $(document).ready(function(){
 
         render_message(data);
     });
+    var seconds = 0;
+    var minutes = 0;
+    function format_game_time(){
+        var _s = seconds.toString();
+        if (seconds < 10){
+            _s = '0'+seconds.toString();
+        }
+        $('.game_time').text(minutes.toString()+':'+_s);
+    }
+    function update_timer(){
+        seconds++;
+        if (seconds === 60){
+            seconds = 0;
+            minutes++;
+        }
+        format_game_time();
+        setTimeout(function(){
+            update_timer();
+        }, 1000);
+    }
+    format_game_time();
+    update_timer();
     function scroll_chat(){
         var d = $('.chat_main');
         d.scrollTop(d.prop("scrollHeight"));
@@ -77,6 +99,22 @@ $(document).ready(function(){
     $('.game_display').on('click', '.emoji_span', function(){
         $('.main_input_box').val($('.main_input_box').val()+$(this).text());
     });
+    function display_scores(){
+        var color_codes = {10: '#24EA1E', 1: '#FF0000', 3: '#FF530D', 2: '#F74017', 5: '#FCD00A', 4: '#FD8641', 7: '#F3EC0E', 6: '#F8E049', 9: '#4DC84A', 8: '#73CA7C'};
+        $('.entity_scores').each(function(){
+            var _score = parseInt($(this).data('score'));
+            if (_score < 0){
+                $('.'+$(this).data('entity')+'_score_negative').css('width', (Math.abs(_score)*10).toString()+'%');
+                $('.'+$(this).data('entity')+'_score_negative').css('border-bottom', '10px solid '+color_codes[Math.abs(_score)]);
+            }
+            else{
+                $('.'+$(this).data('entity')+'_score_positive').css('width', (_score*10).toString()+'%');
+                $('.'+$(this).data('entity')+'_score_positive').css('background-color', color_codes[_score]);
+            }
+            
+        });
+    }
+    display_scores();
     function add_message(){
         var _date = new Date();
         var h = _date.getHours();
