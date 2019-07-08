@@ -200,5 +200,7 @@ $(document).ready(function(){
             add_message();
         }
     });
-    
+    $('.game_board_wrapper').on('click', '.violence_level', function(){
+        $(this).attr('class', 'violence_level level_selected');
+    });
 });
