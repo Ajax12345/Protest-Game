@@ -1,4 +1,12 @@
 import typing, json, game_utilites
+import pusher
+pusher_client = pusher.Pusher(
+  app_id='814342',
+  key='f7e3f6c14176cdde1625',
+  secret='5f4648c5a702b25bdb23',
+  cluster='us2',
+  ssl=True
+)
 
 class _message:
     def __init__(self, _data:dict) -> None:
@@ -60,3 +68,21 @@ class Game:
     @classmethod
     def get_scores(cls, _payload:dict) -> str:
         return json.dumps(json.load(open('game_data.json'))['score'])
+
+    @classmethod
+    def add_player_position(cls, _payload:dict) -> dict:
+        print(_payload)
+        _data = json.load(open('game_data.json'))
+        if all(i['position'] != [_payload['position']['x'], _payload['position']['y']] for i in _data['board']):
+            _new_payload = {'player':_payload['player'], 'role':_payload['role'], 'position':[_payload['position']['x'], _payload['position']['y']]}
+            with open('game_data.json', 'w') as f:
+                json.dump({**_data, 'board':_data['board']+[_new_payload]}, f)
+            print(f'update-markers{_payload["gameid"]}')
+            pusher_client.trigger('markers', f'update-markers{_payload["gameid"]}', _new_payload)
+            return {'success':'True'}
+        return {'success':'False'}
+
+    @classmethod
+    def get_all_markers(cls, _payload:dict) -> typing.List[dict]:
+        _data = json.load(open('game_data.json'))
+        return _data['board']
