@@ -1,4 +1,7 @@
 $(document).ready(function(){
+
+    load_message_history();
+    get_gametime();
     Pusher.logToConsole = true;
 
     var pusher = new Pusher('f7e3f6c14176cdde1625', {
@@ -6,29 +9,76 @@ $(document).ready(function(){
       forceTLS: true
     });
     var channel = pusher.subscribe('private-game-chat');
-    channel.bind('client-protest-chat'+$('.game_name').data('gameid'), function(data) {
+    channel.bind('client-'+$('.logged_in_user').data('gamerole')+'-chat'+$('.game_name').data('gameid'), function(data) {
 
         render_message(data);
     });
-    var seconds = 0;
-    var minutes = 0;
+    
+    
     function format_game_time(){
+        var minutes = parseInt($('.game_time').text().split(':')[0]);
+        var seconds = parseInt($('.game_time').text().split(':')[1]);
         var _s = seconds.toString();
         if (seconds < 10){
             _s = '0'+seconds.toString();
         }
-        $('.game_time').text(minutes.toString()+':'+_s);
+        $('.game_time').html(minutes.toString()+':'+_s);
+        $.ajax({
+            url: "/update_gametime",
+            type: "get",
+            data: {payload: JSON.stringify({'gameid':parseInt($('.game_name').data('gameid')), 'time':minutes.toString()+':'+_s})},
+            success: function(response) {
+              //pass
+            },
+            error: function(xhr) {
+              //Do Something to handle error
+            }
+        });
     }
     function update_timer(){
+        var minutes = parseInt($('.game_time').text().split(':')[0]);
+        var seconds = parseInt($('.game_time').text().split(':')[1]);
         seconds++;
         if (seconds === 60){
             seconds = 0;
             minutes++;
         }
-        format_game_time();
+        var _s = seconds.toString();
+        if (seconds < 10){
+            _s = '0'+seconds.toString();
+        }
+        $('.game_time').html(minutes.toString()+':'+_s);
+        $.ajax({
+            url: "/update_gametime",
+            type: "get",
+            data: {payload: JSON.stringify({'gameid':parseInt($('.game_name').data('gameid')), 'time':minutes.toString()+':'+_s})},
+            success: function(response) {
+              //pass
+            },
+            error: function(xhr) {
+              //Do Something to handle error
+            }
+        });
+        //format_game_time();
         setTimeout(function(){
             update_timer();
         }, 1000);
+    }
+    function get_gametime(){
+        $.ajax({
+            url: "/get_gametime",
+            type: "get",
+            data: {payload: JSON.stringify({'gameid':parseInt($('.game_name').data('gameid'))})},
+            success: function(response) {
+              $('.game_time').html(response.time);
+              
+              
+              update_timer();
+            },
+            error: function(xhr) {
+              //Do Something to handle error
+            }
+        });
     }
     function create_board(){
        for (var i = 0; i < 18; i++){
@@ -48,11 +98,25 @@ $(document).ready(function(){
        $("#board_cell_2_17").html("<span class='police_pulse'></span>")
     }
     create_board();
-    format_game_time();
-    update_timer();
+    
+    
     function scroll_chat(){
         var d = $('.chat_main');
         d.scrollTop(d.prop("scrollHeight"));
+    }
+    function load_message_history(){
+        $.ajax({
+            url: "/get_message_history",
+            type: "get",
+            data: {payload: JSON.stringify({'role':$('.logged_in_user').data('gamerole'), 'gameid':parseInt($('.game_name').data('gameid'))})},
+            success: function(response) {
+                $(response.html).insertAfter('.chat_history_buffer');
+                scroll_chat();
+            },
+            error: function(xhr) {
+              //Do Something to handle error
+            }
+        });
     }
     function adjust_main_wrappers(){
         var h1 = parseInt($('.game_chat_wrapper').css('height').match('\\d+'));
@@ -95,6 +159,7 @@ $(document).ready(function(){
         _ref.attr('class', 'chat_channel_option selected_channel')
         $(".chat_header_text").html('#'+_ref.data('channel'));
         $('.main_input_box').attr('placeholder', 'Message #'+_ref.data('channel'));
+        $('.logged_in_user').attr('data-gamerole', _ref.data('channel').toLowerCase());
         set_channel_selection_color();
     }); 
     $('.game_display').on('click', '.select_emogi_pannel', function(){
@@ -117,6 +182,22 @@ $(document).ready(function(){
     $('.game_display').on('click', '.emoji_span', function(){
         $('.main_input_box').val($('.main_input_box').val()+$(this).text());
     });
+    function get_scores(){
+        $.ajax({
+            url: "/get_scores",
+            type: "get",
+            data: {payload: JSON.stringify({'gameid':parseInt($('.game_name').data('gameid'))})},
+            success: function(response) {
+              var scores = JSON.parse(response.scores);
+              $('.police_score_outer').attr('data-score', scores.police.toString());
+              $('.protester_score_outer').attr('data-score', scores.protesters.toString());
+              display_scores();
+            },
+            error: function(xhr) {
+              //Do Something to handle error
+            }
+        });
+    }
     function display_scores(){
         var color_codes = {10: '#24EA1E', 1: '#FF0000', 3: '#FF530D', 2: '#F74017', 5: '#FCD00A', 4: '#FD8641', 7: '#F3EC0E', 6: '#F8E049', 9: '#4DC84A', 8: '#73CA7C'};
         $('.entity_scores').each(function(){
@@ -132,7 +213,7 @@ $(document).ready(function(){
             
         });
     }
-    display_scores();
+    //display_scores();
     function add_message(){
         var _date = new Date();
         var h = _date.getHours();
@@ -156,9 +237,9 @@ $(document).ready(function(){
         });
         if (_message.length > 0){
             var _timestamp = h.toString()+':'+mins+" "+m;
-            
-            console.log({'poster':$('.logged_in_user').data('tuser'), 'timestamp':_timestamp, 'message':_message});
-            channel.trigger('client-protest-chat'+$('.game_name').data('gameid'), {'poster':$('.logged_in_user').data('tuser'), 'timestamp':_timestamp, 'message':_message});
+            var _message_payload = {'poster':$('.logged_in_user').data('tuser'), 'timestamp':_timestamp, 'message':_message};
+            console.log(_message_payload);
+            channel.trigger('client-'+$('.logged_in_user').data('gamerole')+'-chat'+$('.game_name').data('gameid'), _message_payload);
             
             //pass
             var _html = `
@@ -176,7 +257,21 @@ $(document).ready(function(){
             
             $('.chat_main').append(_html);
             scroll_chat();
+            log_message(_message_payload);
         }
+    }
+    function log_message(data){
+        $.ajax({
+            url: "/log_message",
+            type: "get",
+            data: {payload: JSON.stringify({'role':$('.logged_in_user').data('gamerole'), 'gameid':parseInt($('.game_name').data('gameid')), 'payload':data})},
+            success: function(response) {
+              //$("#place_for_suggestions").html(response);
+            },
+            error: function(xhr) {
+              //Do Something to handle error
+            }
+          });
     }
     function render_message(data){
         var _html =`
