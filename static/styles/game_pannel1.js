@@ -20,6 +20,23 @@ $(document).ready(function(){
 
         add_new_marker(data);
     });
+    var scores = pusher.subscribe('scores');
+    scores.bind('update-scores'+$('.game_name').data('gameid'), function(data) {
+        console.log(data);
+        update_police_score(data.police);
+        update_protester_score(data.protesters);
+        
+        if (data.keepgoing){
+            $('.reaction_display_table').css('display', 'block');
+        }
+        else{
+            $('.reaction_display_table').css('display', 'none');
+        }
+        //$('.reaction_display_table').css('display', 'block');
+        adjust_main_wrappers();
+        
+        
+    });
     function add_new_marker(data){
         var _htl = `
             "<span class='${data.role}_pulse'></span>"
@@ -119,7 +136,7 @@ $(document).ready(function(){
             $('.game_board_table').append(tr_html);
             for (var b = 0; b < 20; b++){
                 var td_html =`
-                    <td class='game_board_td' id='board_td_{i}_{b}'><div class='board_cell' id='board_cell_${i}_${b}' data-x='${b}' data-y='${i}'></div></td>
+                    <td class='game_board_td' id='board_td_${i}_${b}'><div class='board_cell' id='board_cell_${i}_${b}' data-x='${b}' data-y='${i}'></div></td>
                 `
                 $("#board_tr_"+i.toString()).append(td_html);
             }
@@ -312,6 +329,32 @@ $(document).ready(function(){
             }
         });
     }
+    function update_police_score(_score){
+        var color_codes = {10: '#24EA1E', 1: '#FF0000', 3: '#FF530D', 2: '#F74017', 5: '#FCD00A', 4: '#FD8641', 7: '#F3EC0E', 6: '#F8E049', 9: '#4DC84A', 8: '#73CA7C'};
+        $('.police_score_negative').css('width', '0%');
+        $('.police_score_positive').css('width', '0%');
+        if (_score < 0){
+            $('.police_score_negative').css('width', (Math.abs(_score)*10).toString()+'%');
+            $('.police_score_negative').css('border-bottom', '10px solid '+color_codes[Math.abs(_score)]);
+        }
+        else{
+            $('.police_score_positive').css('width', (_score*10).toString()+'%');
+            $('.police_score_positive').css('background-color', color_codes[_score]);
+        }
+    }
+    function update_protester_score(_score){
+        var color_codes = {10: '#24EA1E', 1: '#FF0000', 3: '#FF530D', 2: '#F74017', 5: '#FCD00A', 4: '#FD8641', 7: '#F3EC0E', 6: '#F8E049', 9: '#4DC84A', 8: '#73CA7C'};
+        $('.protester_score_negative').css('width', '0%');
+        $('.protester_score_positive').css('width', '0%');
+        if (_score < 0){
+            $('.protester_score_negative').css('width', (Math.abs(_score)*10).toString()+'%');
+            $('.protester_score_negative').css('border-bottom', '10px solid '+color_codes[Math.abs(_score)]);
+        }
+        else{
+            $('.protester_score_positive').css('width', (_score*10).toString()+'%');
+            $('.protester_score_positive').css('background-color', color_codes[_score]);
+        }
+    }
     function display_scores(){
         var color_codes = {10: '#24EA1E', 1: '#FF0000', 3: '#FF530D', 2: '#F74017', 5: '#FCD00A', 4: '#FD8641', 7: '#F3EC0E', 6: '#F8E049', 9: '#4DC84A', 8: '#73CA7C'};
         $('.entity_scores').each(function(){
@@ -409,7 +452,35 @@ $(document).ready(function(){
             add_message();
         }
     });
-    $('.game_board_wrapper').on('click', '.violence_level', function(){
-        $(this).attr('class', 'violence_level level_selected');
+    
+    $('.game_display').on('click', '.violence_level', function(){
+        
+        $.ajax({
+            url: "/log_reaction",
+            type: "get",
+            data: {payload: JSON.stringify({'role':$('.logged_in_user').data('role'), 'gameid':parseInt($('.game_name').data('gameid')), 'player':parseInt($('.logged_in_user').data('userid')), 'reaction':$(this).data('reaction')})},
+            success: function(response) {
+                if (response.success === 'True'){
+                    update_police_score(response.police);
+                    update_protester_score(response.protesters);
+                    if (response.keepgoing){
+                        $('.reaction_display_table').css('display', 'block');
+                    }
+                    else{
+                        $('.reaction_display_table').css('display', 'none');
+                    }
+                    //$('.reaction_display_table').css('display', 'block');
+                }
+                else{
+                    $('.reaction_display_table').css('display', 'none');
+                }
+                adjust_main_wrappers();
+                
+            },
+            error: function(xhr) {
+              //Do Something to handle error
+            }
+          });
+        
     });
 });
