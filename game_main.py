@@ -68,6 +68,14 @@ def update_gametime():
 def get_scores():
     return flask.jsonify({'scores':game_manager.Game.get_scores(json.loads(flask.request.args.get('payload')))})
 
+@app.route('/add_player_marker')
+def add_player_marker():
+    return flask.jsonify(game_manager.Game.add_player_position(json.loads(flask.request.args.get('payload'))))
+
+@app.route('/get_all_markers')
+def get_all_markers():
+    return flask.jsonify({'markers':json.dumps(game_manager.Game.get_all_markers(json.loads(flask.request.args.get('payload'))))})
+
 @app.route("/pusher/auth", methods=['POST'])
 def pusher_authentication():
     # pusher_client is obtained through pusher.Pusher( ... )
