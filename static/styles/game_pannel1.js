@@ -14,7 +14,18 @@ $(document).ready(function(){
         render_message(data);
     });
     
-    
+    var markers = pusher.subscribe('markers');
+    //console.log('update-markers'+$('.game_name').data('gameid'));
+    markers.bind('update-markers'+$('.game_name').data('gameid'), function(data) {
+
+        add_new_marker(data);
+    });
+    function add_new_marker(data){
+        var _htl = `
+            "<span class='${data.role}_pulse'></span>"
+        `;
+        $("#board_cell_"+data.position[1].toString()+'_'+data.position[0].toString()).html(_htl); 
+    }
     function format_game_time(){
         var minutes = parseInt($('.game_time').text().split(':')[0]);
         var seconds = parseInt($('.game_time').text().split(':')[1]);
@@ -35,6 +46,7 @@ $(document).ready(function(){
             }
         });
     }
+
     function update_timer(){
         var minutes = parseInt($('.game_time').text().split(':')[0]);
         var seconds = parseInt($('.game_time').text().split(':')[1]);
@@ -80,6 +92,22 @@ $(document).ready(function(){
             }
         });
     }
+    function get_all_markers(){
+        $.ajax({
+            url: "/get_all_markers",
+            type: "get",
+            data: {payload: JSON.stringify({'gameid':parseInt($('.game_name').data('gameid'))})},
+            success: function(response) {
+                var _r = JSON.parse(response.markers);
+                for (var i in _r){
+                    add_new_marker(_r[i]);
+                }
+            },  
+            error: function(xhr) {
+              //Do Something to handle error
+            }
+        });
+    }
     function create_board(){
        for (var i = 0; i < 18; i++){
            var tr_html = `
@@ -93,13 +121,93 @@ $(document).ready(function(){
                 $("#board_tr_"+i.toString()).append(td_html);
             }
        } 
+       /*
        $("#board_cell_3_4").html("<span class='protester_pulse'></span>")
        $("#board_cell_4_4").html("<span class='protester_pulse'></span>")
        $("#board_cell_2_17").html("<span class='police_pulse'></span>")
+       */
     }
+    function get_protester_cells(){
+        var _start = 10;
+        var _options = [];
+        for (var i = 0; i< 18; i++){
+            for (var b = 0; b < _start; b++){
+                if ($("#board_cell_"+i.toString()+'_'+b.toString()).html().length === 0){
+                    _options.push({x:b, y:i})
+                }  
+            }
+            if (_start < 19){
+                _start++;
+            }
+        }
+        if (_options.length > 0){
+            return _options[Math.floor(Math.random()*_options.length)];
+        }
+        return {};
+        
+    }
+    function get_police_cells(){
+        var _start = 10;
+        var _options = [];
+        for (var i = 0; i < 18; i++){
+            if (_start < 20){
+                for (var b = _start; b < 20; b++){
+                    if ($("#board_cell_"+i.toString()+'_'+b.toString()).html().length === 0){
+                        _options.push({x:b, y:i})
+                    }  
+                }
+                _start++;
+            }
+        }
+        /*
+        for (var i in _options){
+            if ($("#board_cell_"+_options[i].y.toString()+'_'+_options[i].x.toString()).html().length === 0){
+                $("#board_cell_"+_options[i].y.toString()+'_'+_options[i].x.toString()).css('background-color', 'gray');
+            }
+        }   
+          
+        */
+        if (_options.length > 0){
+            return _options[Math.floor(Math.random()*_options.length)];
+        }
+        return {}
+        
+    }
+
     create_board();
-    
-    
+    get_all_markers();
+    var p_result = get_protester_cells();
+    var pol_result = get_police_cells();
+    var _place_marker = {'protester':get_protester_cells, 'police':get_police_cells};
+    function place_user_marker(){
+        if ($('.logged_in_user').data('role') != 'instructor'){
+            var _move = _place_marker[$('.logged_in_user').data('role')]();
+            $.ajax({
+                url: "/add_player_marker",
+                type: "get",
+                data: {payload: JSON.stringify({'role':$('.logged_in_user').data('role'), 'gameid':parseInt($('.game_name').data('gameid')), 'player':parseInt($('.logged_in_user').data('userid')), 'position':_move})},
+                success: function(response) {
+                    if (response.success === 'True'){
+                        
+                        var _htl = `
+                        "<span class='${$('.logged_in_user').data('role')}_pulse'></span>"
+                        `;
+                        $("#board_cell_"+_move.y.toString()+'_'+_move.x.toString()).html(_htl); 
+                        
+                    }
+                    else{
+                        place_user_marker();
+                    }
+                },
+                error: function(xhr) {
+                  //Do Something to handle error
+                }
+            });
+        }
+    }
+    place_user_marker();
+    console.log(p_result);
+    console.log(pol_result);
     function scroll_chat(){
         var d = $('.chat_main');
         d.scrollTop(d.prop("scrollHeight"));
