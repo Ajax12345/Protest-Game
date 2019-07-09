@@ -76,6 +76,10 @@ def add_player_marker():
 def get_all_markers():
     return flask.jsonify({'markers':json.dumps(game_manager.Game.get_all_markers(json.loads(flask.request.args.get('payload'))))})
 
+@app.route('/log_reaction')
+def log_reaction():
+    return flask.jsonify(game_manager.Game.log_reaction(json.loads(flask.request.args.get('payload'))))
+
 @app.route("/pusher/auth", methods=['POST'])
 def pusher_authentication():
     # pusher_client is obtained through pusher.Pusher( ... )
