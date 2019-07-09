@@ -71,15 +71,17 @@ class Game:
 
     @classmethod
     def add_player_position(cls, _payload:dict) -> dict:
-        print(_payload)
         _data = json.load(open('game_data.json'))
+        if any(int(i['player']) == int(_payload['player']) for i in _data['board']):
+            return {'success':'NA'}
         if all(i['position'] != [_payload['position']['x'], _payload['position']['y']] for i in _data['board']):
             _new_payload = {'player':_payload['player'], 'role':_payload['role'], 'position':[_payload['position']['x'], _payload['position']['y']]}
+            _updated_data = {**_data, 'board':_data['board']+[_new_payload]}
             with open('game_data.json', 'w') as f:
-                json.dump({**_data, 'board':_data['board']+[_new_payload]}, f)
-            print(f'update-markers{_payload["gameid"]}')
-            pusher_client.trigger('markers', f'update-markers{_payload["gameid"]}', _new_payload)
-            return {'success':'True'}
+                json.dump(_updated_data, f)
+
+            pusher_client.trigger('markers', f'update-markers{_payload["gameid"]}', {**_new_payload, 'candisplay':all(any(c['player'] == i['playerid'] for c in _updated_data['board']) for i in _updated_data['players'])})
+            return {'success':'True', 'candisplay':all(any(c['player'] == i['playerid'] for c in _updated_data['board']) for i in _updated_data['players'])}
         return {'success':'False'}
 
     @classmethod
