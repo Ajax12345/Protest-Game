@@ -25,6 +25,9 @@ $(document).ready(function(){
             "<span class='${data.role}_pulse'></span>"
         `;
         $("#board_cell_"+data.position[1].toString()+'_'+data.position[0].toString()).html(_htl); 
+        if (data.candisplay){
+            $('.reaction_display_table').css('display', 'block');
+        }
     }
     function format_game_time(){
         var minutes = parseInt($('.game_time').text().split(':')[0]);
@@ -193,9 +196,12 @@ $(document).ready(function(){
                         "<span class='${$('.logged_in_user').data('role')}_pulse'></span>"
                         `;
                         $("#board_cell_"+_move.y.toString()+'_'+_move.x.toString()).html(_htl); 
-                        
+                        if (response.candisplay){
+                            $('.reaction_display_table').css('display', 'block');
+                        }
                     }
-                    else{
+
+                    else if (response.success === 'False'){
                         place_user_marker();
                     }
                 },
