@@ -1,5 +1,5 @@
 import typing, json, game_utilites
-import pusher
+import pusher, collections
 pusher_client = pusher.Pusher(
   app_id='814342',
   key='f7e3f6c14176cdde1625',
@@ -57,10 +57,13 @@ class Game:
     
     @classmethod
     def update_gametime(cls, _payload:dict) -> None:
-        _data = json.load(open('game_data.json'))
-        with open('game_data.json', 'w') as f:
-            json.dump({**_data, 'time':_payload['time']}, f)
-    
+        try:
+            _data = json.load(open('game_data.json'))
+            with open('game_data.json', 'w') as f:
+                json.dump({**_data, 'time':_payload['time']}, f)
+        except:
+            pass
+
     @classmethod
     def get_gametime(cls, _payload:dict) -> str:
         return json.load(open('game_data.json'))['time']
@@ -88,3 +91,23 @@ class Game:
     def get_all_markers(cls, _payload:dict) -> typing.List[dict]:
         _data = json.load(open('game_data.json'))
         return _data['board']
+
+    @classmethod
+    def log_reaction(cls, _payload:dict) -> dict:
+        _data = json.load(open('game_data.json'))
+        new_data = {**_data, 'round':_data['round']+[_payload]}
+        if all(any(int(i['player']) == int(c['playerid']) for i in new_data['round']) for c in new_data['players']):
+            convert = {'violent':1, 'nonviolent':0}
+            [[prot_score, _]], [[pol_score, _]] = collections.Counter([i['reaction'] for i in new_data['round'] if i['role'] == 'protester']).most_common(1), collections.Counter([i['reaction'] for i in new_data['round'] if i['role'] == 'police']).most_common(1)
+            p1, p2 = {int(a):{int(c):d for c, d in b.items()} for a, b in json.load(open('payoff_matrix.json')).items()}[convert[prot_score]][convert[pol_score]]
+            new_score = {'police':_data['score']['police']+p2, 'protesters':_data['score']['protesters']+p1}
+            pusher_client.trigger('scores', f'update-scores{_payload["gameid"]}', {**new_score, 'keepgoing':len(new_data['rounds'])+1 < 3})
+            final_data = {**_data, 'rounds':_data['rounds']+[{'moves':new_data['round'], 'matrix_score':{'police':p2, 'protesters':p1}, 'reactions':{'police':pol_score, 'protesters':prot_score}, 'running_score':new_score}], 'round':[], 'score':new_score}
+            with open('game_data.json', 'w') as f:
+                json.dump(final_data, f)
+            return {'success':'True', **new_score, 'keepgoing':len(final_data['rounds']) < 3}
+        with open('game_data.json', 'w') as f:
+            json.dump(new_data, f)
+        return {'success':'False'}
+        
+        
