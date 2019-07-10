@@ -1,0 +1,12 @@
+{%for message in messages%}
+<div style='height:10px'></div>
+            <table>
+                <tr>
+                    <td><div class='poster_name'>{{message.poster}}</div></td>
+                    <td><div class='message_date'>{{message.timestamp}}</div></td>
+                </tr>
+            </table>
+            <div style='height:5px'></div>
+            <div class='message_text'>{{message.message}}</div>
+            <div style='height:5px'></div>
+{%endfor%}
