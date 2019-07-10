@@ -10,7 +10,7 @@ $(document).ready(function(){
             type: "get",
             data: {payload: JSON.stringify(_r)},
             success: function(response) {
-              window.location.replace('/game/1/SomeUser');
+              window.location.replace('/game/1/JamesP');
             },
             error: function(xhr) {
               //Do Something to handle error
