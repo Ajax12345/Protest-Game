@@ -2,7 +2,7 @@
     <head>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width">
-        <title>Game {{val}}</title>
+        <title>{{game.name}}</title>
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
         <link href="https://fonts.googleapis.com/css?family=Fira+Sans|Muli|Roboto&display=swap" rel="stylesheet">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -19,10 +19,10 @@
             <table style='width:100%'>
                 <tr>
                     <td style='width:10%'><i class="fas fa-bars back_to_menu" style='color:white;font-size:2em'></i></td>
-                    <td style='width:45%'><div class='game_name' data-gameid='{{val}}'>Game {{val}}</div></td>
+                    <td style='width:45%'><div class='game_name' data-gameid='{{game.id}}'>{{game.name}}</div></td>
                     <td style='width:15%'></td>
-                    <td style='width:15%'><span class='badge badge_protester'>Protester</span></td>
-                    <td style='width:15%'><span class='logged_in_user' data-userid='{{user.id}}' data-tuser='{{tuser}}'>{{user.name}}</span></td>
+                    <td style='width:15%'><span class='badge badge_{{game.role}}'>{{game.display_role}}</span></td>
+                    <td style='width:15%'><span class='logged_in_user' data-userid='{{game.player_id}}' data-role='{{game.role}}' data-tuser='{{game.loggedin}}' data-gamerole='{{game.chat_role_data}}'>{{game.loggedin}}</span></td>
                 </tr>
             </table>
         </div>
@@ -38,25 +38,28 @@
                                         <div class='channels_header'>
                                             <div class='channels_header_text'>Channels</div>
                                         </div>
-                                        <div class='chat_channel_option selected_channel' data-channel='Protesters'>#Protesters</div>
-                                        <div class='chat_channel_option' data-channel='Police'>#Police</div>
-
+                                        {%if game.is_instructor%}
+                                            <div class='chat_channel_option selected_channel' data-channel='Protesters'>#Protesters</div>
+                                            <div class='chat_channel_option' data-channel='Police'>#Police</div>
+                                        {%else%}
+                                            <div class='chat_channel_option selected_channel' data-channel='{{game.chat_role}}'>#{{game.chat_role}}</div>
+                                        {%endif%}
                                     </div>
                                     
                                 </td>
                                 <td style='width:70%'>
                                     <div class='chat_wrapper' style='margin-left:-2px;'>
                                         <div class='chat_header'>
-                                            <div class='chat_header_text'>#Protesters</div>
+                                            <div class='chat_header_text'>#{{game.chat_role}}</div>
                                         </div>
                                         <div class='chat_main'>
-                                            
+                                            <div class='chat_history_buffer'></div>
                                         </div>
                                         <div class='chat_input_wrapper'>
                                             <div class='post_message_box'>
                                                 <table style='width:100%'>
                                                     <tr>
-                                                        <td style='width:80%' class='input_section'><input type="text" class="main_input_box" placeholder='Message #Protestors'></td>
+                                                        <td style='width:80%' class='input_section'><input type="text" class="main_input_box" placeholder='Message #{{game.chat_role}}'></td>
                                                         <td style='width:20%;'><div class='select_emogi_pannel'><i class="far fa-laugh" style='font-size:1.5em;color:rgb(113, 110, 110)'></i></div></td>
                                                     </tr>
                                                 </table>
@@ -80,7 +83,7 @@
                                 <tr>
                                     <td style='width:10%;text-align:center;'><img src="/static/styles/eared-shield-1.svg" alt="police_badge" style='width:70%;height:30%;'></td>
                                     <td style='width:35%;'>
-                                        <div class='entity_scores' data-entity='police' data-score='-2'>
+                                        <div class='entity_scores police_score_outer' data-entity='police' data-score='0'>
                                             <div class='progress_bar bar_left'>
                                                 <div class='police_score_positive'></div>
                                             </div>
@@ -91,10 +94,10 @@
                                         
                                     </td>
                                     <td style='width:10%;'>
-                                        <div class='game_time'>0:00</div>
+                                        <div class='game_time'></div>
                                     </td>
                                     <td style='width:35%;'>
-                                        <div class='entity_scores' data-entity='protester' data-score='-8'>
+                                        <div class='entity_scores protester_score_outer' data-entity='protester' data-score='0'>
                                             <div class='progress_bar bar_right'>
                                                 <div class='protester_score_positive'></div>
                                             </div>
@@ -114,7 +117,7 @@
                                 </table>
                             </div>
                             <div style='height:20px'></div>
-                            <table style='width:55%'>
+                            <table style='width:55%;display:none;' class='reaction_display_table'>
                                 <tr>
                                     <td>
                                         <td style='width:50%'><div class='violence_level' data-reaction='violent'>Violent</div></td>
