@@ -1,0 +1,245 @@
+.roboto{
+    font-family: 'Roboto', sans-serif;
+    font-size:40px;
+
+}
+.muli{
+    font-family: 'Muli', sans-serif;
+    font-size:40px;
+}
+.fira_sans{
+    font-family: 'Fira Sans', sans-serif;
+    font-size:40px;
+}
+body{
+    background-color:#e9ecef;
+}
+.header{
+    width:100%;
+    background-color:white;
+    border-bottom:solid;
+    border-width:2px;
+    border-color:#DDDDDD;
+    padding:8px;
+}
+.logged_in_user{
+    float:right;
+    text-decoration:underline;
+    font-family: 'Roboto', sans-serif;
+    font-size:17px;
+    margin-right:10px;
+
+}
+.logged_in_user:hover{
+    cursor:pointer;
+}
+.new_game{
+    font-family: 'Roboto', sans-serif;
+    font-size:20px;
+    color:white;
+    border-radius:30px;
+    padding:10px;
+    background-color:#E62C78;
+    width:55%;
+    text-align: center;
+    float:right;
+}
+.new_game:hover{
+    cursor:pointer;
+}
+.site_login{
+    font-family: 'Roboto', sans-serif;
+    font-size:20px;
+    
+}
+.site_login:hover{
+    cursor:pointer;
+}
+.login_baseline{
+    width:20%;
+    height:4px;
+    margin:0 auto;
+    background-color:#E62C78;
+}
+.hello_text{
+    font-family: 'Roboto', sans-serif;
+    font-size:16px;
+    color:#87898c;
+    font-weight:normal;
+}
+.user_name{
+    font-family: 'Roboto', sans-serif;
+    font-size:17px;
+    float:right;
+    font-weight:bold;
+}
+.user_name:hover{
+    cursor:pointer;
+}
+.outer_wrapper{
+    width:90%;
+    margin:0 auto;
+}
+.all_game_text{
+    font-family: 'Roboto', sans-serif;
+    font-size:30px;
+    font-weight:bold;
+}
+.game_count{
+    padding:4px;
+    border-radius:30px;
+    padding-right:15px;
+    padding-left:15px;
+    color:white;
+    font-family: 'Roboto', sans-serif;
+    font-size:20px;
+    color:white;
+    font-weight:bold;
+    background-color:#E62C78;
+    margin-left:7px;
+    
+}
+.game_card_wrapper{
+    width:100%;
+
+}
+.game_card{
+    width:25%;
+    padding:15px;
+    border-radius:20px;
+    background-color:white;
+    display: inline-block;
+    margin-left:10px;
+    
+}
+.game_name{
+    float:left;
+    font-family: 'Roboto', sans-serif;
+    font-size:20px;
+    font-weight:bold;
+    
+}
+.game_time{
+    float:right;
+    font-size:20px;
+    font-family: 'Roboto', sans-serif;
+    font-weight:bold;
+}
+.not_started{
+    font-weight:normal;
+    color:rgb(141, 138, 138);
+}
+.not_started_tag{
+    padding-left:8px;
+    padding-right:8px;
+    background-color:rgb(221, 217, 217);
+    font-family: 'Roboto', sans-serif;
+    font-size:14px;
+    border-radius:30px;
+    float:right;
+    font-weight:bold;
+}
+.people_text{
+    font-size:17px;
+    font-family: 'Roboto', sans-serif;
+    color:rgb(134, 131, 131);
+    font-weight:bold;
+}
+.class_users_wrapper{
+    width:100%;
+}
+.class_display{
+    font-family: 'Roboto', sans-serif;
+    font-size:18px;
+    padding:7px;
+    border-radius:8px;
+    color:white;
+    background-color:#FABC09;
+}
+.not_started_team{
+    font-family: 'Roboto', sans-serif;
+    font-size:23px;
+    color:rgb(56, 55, 55);
+}
+.score_val{
+    float:right;
+    font-size:18px;
+    font-weight:bold;
+}
+.not_started_score{
+    color:rgb(91, 89, 89);
+}
+.score_spacer{
+    background-color:rgb(183, 179, 179);
+    height:1px;
+    width:100%;
+}
+.go_to_game{
+    font-size:20px;
+    font-family: 'Roboto', sans-serif;
+    border-radius:10px;
+    border:solid;
+    border-width:1px;
+    border-color:#E62C78;
+    color:#E62C78;
+    padding:7px;
+}
+.go_to_game:hover{
+    cursor:pointer;
+    color:white;
+    background-color:#E62C78;
+    transition:0.2s;
+}
+.manage_game{
+    font-size:19px;
+    font-family: 'Roboto', sans-serif;
+    margin-left:6px;
+    float:right;
+}
+.manage_game:hover{
+    cursor:pointer;
+}
+.manage_underscore{
+    height:3px;
+    width:68%;
+    margin-left:6px;
+    background-color:#E62C78;
+    float:right;
+}
+.game_started{
+    color:rgb(236, 67, 67);
+
+}
+.started_tag{
+    padding-left:8px;
+    padding-right:8px;
+    background-color:rgb(221, 217, 217);
+    font-family: 'Roboto', sans-serif;
+    font-size:14px;
+    border-radius:30px;
+    float:right;
+    font-weight:bold;
+    background-color:rgb(236, 67, 67);
+    color:white;
+
+}
+.winning_team{
+    color:black;
+    font-family: 'Roboto', sans-serif;
+    font-size:23px;
+    
+}
+.winning_score{
+    color:black;
+}
+.losing_team{
+    font-family: 'Roboto', sans-serif;
+    font-size:23px;
+    color:rgb(141, 139, 139);
+}
+.losing_score{
+    color:rgb(141, 139, 139);
+}
+.finished_time{
+    color:black;
+}
