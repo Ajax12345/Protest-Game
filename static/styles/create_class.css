@@ -1,0 +1,303 @@
+.roboto{
+    font-family: 'Roboto', sans-serif;
+    font-size:40px;
+
+}
+.muli{
+    font-family: 'Muli', sans-serif;
+    font-size:40px;
+}
+.fira_sans{
+    font-family: 'Fira Sans', sans-serif;
+    font-size:40px;
+}
+body{
+    background-color:#e9ecef;
+}
+.header{
+    width:100%;
+    background-color:white;
+    border-bottom:solid;
+    border-width:2px;
+    border-color:#DDDDDD;
+    padding:8px;
+}
+.logged_in_user{
+    float:right;
+    text-decoration:underline;
+    font-family: 'Roboto', sans-serif;
+    font-size:17px;
+    margin-right:10px;
+
+}
+.logged_in_user:hover{
+    cursor:pointer;
+}
+.new_game{
+    font-family: 'Roboto', sans-serif;
+    font-size:20px;
+    color:white;
+    border-radius:30px;
+    padding:10px;
+    background-color:#E62C78;
+    width:55%;
+    text-align: center;
+    float:right;
+}
+.new_game:hover{
+    cursor:pointer;
+}
+.site_login{
+    font-family: 'Roboto', sans-serif;
+    font-size:20px;
+    
+}
+.site_login:hover{
+    cursor:pointer;
+}
+.login_baseline{
+    width:20%;
+    height:4px;
+    margin:0 auto;
+    background-color:#E62C78;
+}
+.hello_text{
+    font-family: 'Roboto', sans-serif;
+    font-size:16px;
+    color:#87898c;
+    font-weight:normal;
+}
+.user_name{
+    font-family: 'Roboto', sans-serif;
+    font-size:17px;
+    float:right;
+    font-weight:bold;
+}
+.user_name:hover{
+    cursor:pointer;
+}
+.new_game_text{
+    font-size:30px;
+    font-family: 'Roboto', sans-serif;
+    font-weight:bold;
+}
+.cancel_button{
+    padding:10px;
+    font-family: 'Roboto', sans-serif;
+    float:right;
+    border-radius:10px;
+    font-size:18px;
+    color:white;
+    background-color:#bfc2c6;
+    margin-right:50px;
+
+}
+.cancel_button:hover{
+    cursor:pointer;
+}
+.game_name_outer{
+    width:50%;
+    border-radius:10px;
+    background-color:white;
+    padding:15px;
+
+}
+.game_name_text{
+    font-family: 'Roboto', sans-serif;
+    font-size:20px;
+    font-weight:bold;
+}
+.game_name{
+    font-family: 'Roboto', sans-serif;
+    font-size:18px;
+    width:100%;
+    border:solid;
+    border-radius:5px;
+    border-width:2px;
+    border-color:#E62C78;
+    padding:5px;
+}
+.game_name:focus{
+    outline:none;
+}
+.add_users_pannel{
+    width:90%;
+    border-radius:10px;
+    background-color:white;
+    padding:15px;
+}
+.student_listing{
+    border-radius:10px;
+    background-color: rgb(231, 239, 246);
+    padding:10px;
+}
+.student_name{
+    font-family: 'Roboto', sans-serif;
+    font-size:20px;
+    font-weight:bold;
+}
+.protester_role{
+    font-family: 'Roboto', sans-serif;
+    border-radius:30px;
+    padding-left:8px;
+    padding-right: 8px;
+    padding-top:1px;
+    padding-bottom:1px;
+    background-color:#E62C78;
+    color:white;
+    font-size:18px;
+}
+
+.police_role{
+    font-family: 'Roboto', sans-serif;
+    border-radius:30px;
+    padding-left:8px;
+    padding-right: 8px;
+    padding-top:1px;
+    padding-bottom:1px;
+    background-color:rgb(40, 84, 154);
+    color:white;
+    font-size:18px;
+    margin-left:4px;
+
+}
+
+.student_role_select{
+    width:40%;
+}
+.diselect{
+    font-family: 'Roboto', sans-serif;
+    margin-left:4px;
+    font-size:16px;
+    text-decoration:underline;
+    float:right;
+
+
+}
+.diselect:hover{
+    cursor:pointer;
+}
+.role_option:hover{
+    cursor:pointer;
+}
+.board_state{
+    width:100%;
+    text-align:center;
+    font-family: 'Roboto', sans-serif;
+    font-size:18px;
+    font-weight:bold;
+    padding:10px;
+    border:solid;
+    border-width:2px;
+    border-color:#E62C78;
+
+}
+.board_state:hover{
+    cursor:pointer;
+}
+.board_state_left{
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
+
+}
+.board_state_right{
+    border-top-right-radius: 30px;
+    border-bottom-right-radius: 30px;
+    margin-left:-4px;
+    
+}
+.board_state_selected{
+    background-color:#E62C78;
+    color:white;
+}
+.new_class_wrapper{
+    width:60%;
+    margin:0 auto;
+}
+.submit_new_class{
+    background-color:#E62C78;
+    color:white;
+    font-size:20px;
+    padding:10px;
+    border-radius:6px;
+    font-family: 'Roboto', sans-serif;
+    
+}
+.submit_new_class:hover{
+    cursor:pointer;
+}
+.choose_roster{
+    opacity:0;
+}
+.add_roster_wrapper{
+    font-size:20px;
+    font-weight:bold;
+    font-family: 'Roboto', sans-serif;
+    color:white;
+    border-radius:5px;
+    padding:10px;
+    background-color:#E62C78;
+}
+.main_wrapper_text{
+    font-size:20px;
+    font-weight:bold;
+    font-family: 'Roboto', sans-serif;
+}
+.upload-btn-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    font-family: 'Roboto', sans-serif;
+  }
+  .upload-btn-wrapper:hover{
+    cursor:pointer;
+}
+  .btn {
+    font-family: 'Roboto', sans-serif;
+    
+    border-radius:2px;
+    background-color:#E62C78;
+    color:white;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  .btn:hover{
+      cursor:pointer;
+  }
+  
+  .upload-btn-wrapper input[type=file] {
+    font-size: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    font-family: 'Roboto', sans-serif;
+  }
+ .create_class_button{
+    font-family: 'Roboto', sans-serif;
+    float:right;
+    padding: 10px 23px;
+    border-radius: 8px;
+    font-size: 20px;
+    font-weight: bold;
+    color:#E62C78;
+    border:solid;
+    border-width:2px;
+    border-color:#E62C78;
+ }
+ .create_class_button:hover{
+     cursor:pointer;
+     transition:0.2s;
+     color:white;
+     background-color:#E62C78;
+
+ }
+ .filename_display{
+    background-color: rgb(231, 239, 246);
+    padding: 6px;
+    width:100%;
+    color:rgb(63, 74, 84);
+    font-family: 'Roboto', sans-serif;
+ }
