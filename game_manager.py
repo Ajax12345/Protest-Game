@@ -1,5 +1,5 @@
 import typing, json, game_utilites
-import pusher, collections
+import pusher, collections, re, os
 pusher_client = pusher.Pusher(
   app_id='814342',
   key='f7e3f6c14176cdde1625',
@@ -47,6 +47,11 @@ class Game:
     @classmethod
     def get_chat_history(cls, _payload:dict) -> typing.List[typing.NamedTuple]:
         return list(map(_message, json.load(open('game_data.json'))[f'{_payload["role"]}_chat']))
+
+    @classmethod
+    def can_add_reaction(cls, _payload:dict) -> dict:
+        _data = json.load(open('game_data.json'))
+        return {'can_add_reaction':len(_data['round']) < 3 and all(any(c['player'] == i['playerid'] for c in _data['board']) for i in _data['players'])}
 
     @classmethod
     def log_message(cls, _payload:dict) -> dict:
@@ -111,3 +116,12 @@ class Game:
         return {'success':'False'}
         
         
+
+class Classes:
+    @classmethod
+    def csv_create_class(cls, _name:str, _filename:str) -> int:
+        return 3
+    @classmethod
+    def create_class(cls, _name:str, _id:int) -> int:
+        _file = [i for i in os.listdir('class_rosters') if i.startswith(f'class_roster{_id}')][0]
+        return getattr(cls, f'{_file.split(".")[-1]}_create_class')(_name, _file)
