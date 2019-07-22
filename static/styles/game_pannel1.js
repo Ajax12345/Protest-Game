@@ -2,6 +2,8 @@ $(document).ready(function(){
 
     load_message_history();
     get_gametime();
+    select_proper_chat();
+    can_add_reaction();
     Pusher.logToConsole = true;
 
     var pusher = new Pusher('f7e3f6c14176cdde1625', {
@@ -9,9 +11,13 @@ $(document).ready(function(){
       forceTLS: true
     });
     var channel = pusher.subscribe('private-game-chat');
-    channel.bind('client-'+$('.logged_in_user').data('gamerole')+'-chat'+$('.game_name').data('gameid'), function(data) {
+    channel.bind('client-protesters-chat'+$('.game_name').data('gameid'), function(data) {
 
-        render_message(data);
+        render_message_protesters(data);
+    });
+    channel.bind('client-police-chat'+$('.game_name').data('gameid'), function(data) {
+
+        render_message_police(data);
     });
     
     var markers = pusher.subscribe('markers');
@@ -31,12 +37,78 @@ $(document).ready(function(){
         }
         else{
             $('.reaction_display_table').css('display', 'none');
+            generate_victory_pannel();
         }
         //$('.reaction_display_table').css('display', 'block');
         adjust_main_wrappers();
         
         
     });
+    function generate_victory_pannel(){
+        var _winner = 'Police';
+        var _p1_score = parseInt($('.__police_score_display').text());
+        var _p2_score = parseInt($('.__protester_score_display').text());
+        if (_p1_score < _p2_score){
+            _winner = 'Protesters';
+        }
+        else if (_p1_score === _p2_score){
+            _winner = 'draw';
+        }
+        var _winner_crest = {'Police':'eared-shield-1.svg', 'Protesters':'raised-fist.svg'};
+        if (_winner != 'draw'){
+            
+            var _html = `
+                <div class='winner_banner_name'>${_winner} Win!</div>
+                <div style='height:20px'></div>
+                <div class='logo_winner_wrapper'>
+                <img src="/static/styles/${_winner_crest[_winner]}" alt="${_winner}_badge" style="width:30%;height:30%;margin:0 auto;">
+                </div>
+                <div style='height:20px'></div>
+                <div class='score_card'>
+                <table style='width:100%;margin:0 auto;'>
+                <tr>
+                     <td style='width:40%'><div class='victory_score_text'>${_p1_score}</div></td>
+                     <td style='width:20%'><div class='victory_score_text'>to</div></td>
+                     <td style='width:40%'><div class='victory_score_text'>${_p2_score}</div></td>
+                </tr>     
+                </table>
+                </div>
+                
+                </div>
+                `
+                $('.full_board').html(_html);
+        }
+        else{
+            var _html = `
+                <div class='winner_banner_name'>Draw!</div>
+                <div style='height:20px'></div>
+                
+                <div class='score_card'>
+                <table style='width:100%;margin:0 auto;'>
+                <tr>
+                     <td style='width:40%'><div class='victory_score_text'>${_p1_score}</div></td>
+                     <td style='width:20%'><div class='victory_score_text'>to</div></td>
+                     <td style='width:40%'><div class='victory_score_text'>${_p2_score}</div></td>
+                </tr>     
+                </table>
+                </div>
+                
+                </div>
+                `
+                $('.full_board').html(_html);
+        }
+        adjust_main_wrappers();
+    }
+    function select_proper_chat(){
+        if ($('.logged_in_user').data('role') != 'police'){
+            $("#protester_chat_channel").attr('class', 'chat_channel_option selected_channel');
+            $("#police_chat_channel").attr('class', 'chat_channel_option');
+        }
+        else{
+            $("#police_chat_channel").attr('class', 'chat_channel_option selected_channel');
+            $("#protester_chat_channel").attr('class', 'chat_channel_option');
+        }
+    }
     function add_new_marker(data){
         var _htl = `
             "<span class='${data.role}_pulse'></span>"
@@ -44,7 +116,25 @@ $(document).ready(function(){
         $("#board_cell_"+data.position[1].toString()+'_'+data.position[0].toString()).html(_htl); 
         if (data.candisplay){
             $('.reaction_display_table').css('display', 'block');
+            
         }
+        adjust_main_wrappers();
+    }
+    function can_add_reaction(){
+        $.ajax({
+            url: "/can_add_reaction",
+            type: "get",
+            data: {payload: JSON.stringify({'gameid':parseInt($('.game_name').data('gameid'))})},
+            success: function(response) {
+                if (response.can_add_reaction){
+                    $('.reaction_display_table').css('display', 'block');
+                    adjust_main_wrappers();
+                }
+            },
+            error: function(xhr) {
+              //Do Something to handle error
+            }
+        });
     }
     function format_game_time(){
         var minutes = parseInt($('.game_time').text().split(':')[0]);
@@ -215,6 +305,7 @@ $(document).ready(function(){
                         $("#board_cell_"+_move.y.toString()+'_'+_move.x.toString()).html(_htl); 
                         if (response.candisplay){
                             $('.reaction_display_table').css('display', 'block');
+                            adjust_main_wrappers();
                         }
                     }
 
@@ -292,6 +383,7 @@ $(document).ready(function(){
         $('.main_input_box').attr('placeholder', 'Message #'+_ref.data('channel'));
         $('.logged_in_user').attr('data-gamerole', _ref.data('channel').toLowerCase());
         set_channel_selection_color();
+        load_chat_message_history(_ref.data('channel'));
     }); 
     $('.game_display').on('click', '.select_emogi_pannel', function(){
         if ($('.emoji_display').css('display') === 'none'){
@@ -313,6 +405,21 @@ $(document).ready(function(){
     $('.game_display').on('click', '.emoji_span', function(){
         $('.main_input_box').val($('.main_input_box').val()+$(this).text());
     });
+    function load_chat_message_history(_role){
+        $.ajax({
+            url: "/get_message_history",
+            type: "get",
+            data: {payload: JSON.stringify({'gameid':parseInt($('.game_name').data('gameid')), 'role':_role.toLowerCase()})},
+            success: function(response) {
+              $('.chat_main').html('<div class="chat_history_buffer"></div>');
+              $('.chat_main').append(response.html);
+              scroll_chat();
+            },
+            error: function(xhr) {
+              //Do Something to handle error
+            }
+        });
+    }
     function get_scores(){
         $.ajax({
             url: "/get_scores",
@@ -331,6 +438,7 @@ $(document).ready(function(){
     }
     function update_police_score(_score){
         var color_codes = {10: '#24EA1E', 1: '#FF0000', 3: '#FF530D', 2: '#F74017', 5: '#FCD00A', 4: '#FD8641', 7: '#F3EC0E', 6: '#F8E049', 9: '#4DC84A', 8: '#73CA7C'};
+        /*
         $('.police_score_negative').css('width', '0%');
         $('.police_score_positive').css('width', '0%');
         if (_score < 0){
@@ -341,9 +449,13 @@ $(document).ready(function(){
             $('.police_score_positive').css('width', (_score*10).toString()+'%');
             $('.police_score_positive').css('background-color', color_codes[_score]);
         }
+        */
+       $('.__police_score_display').html(_score);
+
     }
     function update_protester_score(_score){
         var color_codes = {10: '#24EA1E', 1: '#FF0000', 3: '#FF530D', 2: '#F74017', 5: '#FCD00A', 4: '#FD8641', 7: '#F3EC0E', 6: '#F8E049', 9: '#4DC84A', 8: '#73CA7C'};
+        /*
         $('.protester_score_negative').css('width', '0%');
         $('.protester_score_positive').css('width', '0%');
         if (_score < 0){
@@ -354,6 +466,8 @@ $(document).ready(function(){
             $('.protester_score_positive').css('width', (_score*10).toString()+'%');
             $('.protester_score_positive').css('background-color', color_codes[_score]);
         }
+        */
+        $('.__protester_score_display').html(_score);
     }
     function display_scores(){
         var color_codes = {10: '#24EA1E', 1: '#FF0000', 3: '#FF530D', 2: '#F74017', 5: '#FCD00A', 4: '#FD8641', 7: '#F3EC0E', 6: '#F8E049', 9: '#4DC84A', 8: '#73CA7C'};
@@ -393,10 +507,17 @@ $(document).ready(function(){
             _count = 1;
         });
         if (_message.length > 0){
+            var _role;
+            if ($("#protester_chat_channel").prop('class').match('selected_channel')){
+                _role = 'protesters';
+            }
+            else{
+                _role = 'police';
+            }
             var _timestamp = h.toString()+':'+mins+" "+m;
             var _message_payload = {'poster':$('.logged_in_user').data('tuser'), 'timestamp':_timestamp, 'message':_message};
             console.log(_message_payload);
-            channel.trigger('client-'+$('.logged_in_user').data('gamerole')+'-chat'+$('.game_name').data('gameid'), _message_payload);
+            channel.trigger('client-'+_role+'-chat'+$('.game_name').data('gameid'), _message_payload);
             
             //pass
             var _html = `
@@ -418,10 +539,17 @@ $(document).ready(function(){
         }
     }
     function log_message(data){
+        var _role;
+        if ($("#protester_chat_channel").prop('class').match('selected_channel')){
+            _role = 'protesters';
+        }
+        else{
+            _role = 'police';
+        }
         $.ajax({
             url: "/log_message",
             type: "get",
-            data: {payload: JSON.stringify({'role':$('.logged_in_user').data('gamerole'), 'gameid':parseInt($('.game_name').data('gameid')), 'payload':data})},
+            data: {payload: JSON.stringify({'role':_role, 'gameid':parseInt($('.game_name').data('gameid')), 'payload':data})},
             success: function(response) {
               //$("#place_for_suggestions").html(response);
             },
@@ -446,6 +574,16 @@ $(document).ready(function(){
         
             $('.chat_main').append(_html);
             scroll_chat();
+    }
+    function render_message_police(data){
+        if ($("#police_chat_channel").prop('class').match('selected_channel')){
+            render_message(data);
+        }
+    }
+    function render_message_protesters(data){
+        if ($("#protester_chat_channel").prop('class').match('selected_channel')){
+            render_message(data);
+        }
     }
     $('.main_input_box').keyup(function(e){
         if(e.keyCode == 13 && $(this).val().length > 0){
