@@ -38,12 +38,9 @@
                                         <div class='channels_header'>
                                             <div class='channels_header_text'>Channels</div>
                                         </div>
-                                        {%if game.is_instructor%}
-                                            <div class='chat_channel_option selected_channel' data-channel='Protesters'>#Protesters</div>
-                                            <div class='chat_channel_option' data-channel='Police'>#Police</div>
-                                        {%else%}
-                                            <div class='chat_channel_option selected_channel' data-channel='{{game.chat_role}}'>#{{game.chat_role}}</div>
-                                        {%endif%}
+                                        <div class='chat_channel_option selected_channel' id='protester_chat_channel' data-channel='Protesters'>#Protesters</div>
+                                        <div class='chat_channel_option' id='police_chat_channel' data-channel='Police'>#Police</div>
+                                        
                                     </div>
                                     
                                 </td>
@@ -83,6 +80,8 @@
                                 <tr>
                                     <td style='width:10%;text-align:center;'><img src="/static/styles/eared-shield-1.svg" alt="police_badge" style='width:70%;height:30%;'></td>
                                     <td style='width:35%;'>
+                                        <div class='__police_score_display'>0</div>
+                                        <!--
                                         <div class='entity_scores police_score_outer' data-entity='police' data-score='0'>
                                             <div class='progress_bar bar_left'>
                                                 <div class='police_score_positive'></div>
@@ -91,12 +90,15 @@
                                                 <div class='police_score_negative'></div>
                                             </div>
                                         </div>
-                                        
+                                        -->
                                     </td>
                                     <td style='width:10%;'>
                                         <div class='game_time'></div>
                                     </td>
                                     <td style='width:35%;'>
+                                        
+                                        <div class='__protester_score_display'>0</div>
+                                        <!--
                                         <div class='entity_scores protester_score_outer' data-entity='protester' data-score='0'>
                                             <div class='progress_bar bar_right'>
                                                 <div class='protester_score_positive'></div>
@@ -105,7 +107,8 @@
                                                 <div class='protester_score_negative'></div>
                                             </div>
                                         </div>
-                                        
+                                        -->
+
                                     </td>
                                     <td style='width:10%;text-align:center;'><img src="/static/styles/raised-fist.svg" alt="protester_fist" style='width:50%;height:30%;'></td>
                                 </tr>
