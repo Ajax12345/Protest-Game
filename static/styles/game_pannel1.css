@@ -335,6 +335,22 @@ body{
 .violence_level:hover{
     cursor:pointer;
 }
+.submit_survey{
+    font-family: 'Roboto', sans-serif;
+    padding:10px;
+    font-size:25px;
+    width:200px;
+    border-radius:6px;
+    border:solid;
+    border-width:3px;
+    border-color:rgb(181, 179, 186);
+    color:rgb(181, 179, 186);
+    text-align:center;
+    margin:0 auto;
+}
+.submit_survey:hover{
+    cursor:pointer;
+}
 .level_selected{
     background-color:rgb(181, 179, 186);
     color:#45475a;
@@ -423,6 +439,14 @@ body{
     font-weight:bold;
     color:white;
 }
+.survey_prompt_text{
+    font-family: 'Roboto', sans-serif;
+    font-weight:bold;
+    color:white;
+    font-size:25px;
+    width:100%;
+    text-align:center;
+}
 .score_card{
     width:50%;
     padding:10px;
@@ -433,4 +457,40 @@ body{
 .logo_winner_wrapper{
     width:100%;
     text-align:center;
+}
+.empty_star{
+    cursor:pointer;
+    font-size:2.5em;
+    color:#1c1f2f;
+}
+.full_star{
+    cursor:pointer;
+    font-size:2.5em;
+    color:rgb(249, 218, 11);
+}
+.larger_comments{
+    border-radius:10px;
+    width:60%;
+    margin:0 auto;
+    font-family: 'Roboto', sans-serif;
+    font-size:18px;
+    background-color:rgb(181, 179, 186);
+    color: rgb(37, 37, 39);
+    border:none;
+    height:100px;
+    padding:10px;
+    margin-left: 150px;
+
+
+}
+.larger_comments:focus{
+    outline:none;
+}
+.move_history{
+    width: 95%;
+    border-radius: 10px;
+    background-color: #45475a;
+    margin: 0 auto;
+    padding: 8px;
+    padding-bottom: 15px;
 }
