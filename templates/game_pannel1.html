@@ -75,6 +75,42 @@
                 </td>
                 <td style='width:60%'>
                     <div class='game_board_wrapper'>
+                        <div class='move_history'>
+                            <div class='history_round_label'>Round {{game.current_round}}</div>
+                            <div class='inner_move_history'>
+                                {%for event in game.game_history%}
+                                    {%for reaction in event%}
+                                        <div class='user_reaction'>
+                                            <span class='reactor'>{{reaction.name}}</span><span class='mini_badge badge_{{reaction.role}}'>{{reaction.role_text}}</span>   <span class='reacted_text'>reacted</span> <span class='reactor'>{{reaction.reaction}}</span>
+                                        </div>
+                                        <div style='height:5px'></div>
+                                    {%endfor%}
+                                    <div class='user_reaction'>
+                                            <span class='reactor'>End of Round {{event.round}}:</span><span class='current_score_display'><span class='current_score_num'>{{event.running_score_police}}</span><span class='current_score_num'> to </span><span class='current_score_num'>{{event.running_score_protester}}</span></span><span class='mini_badge badge_{{event.running_score_winner}}' style='margin-left:5px'>{{event.running_winner_text}}</span>
+                                    </div>
+                                {%endfor%}
+                                <!--
+                                <div class='user_reaction'>
+                                    <span class='reactor'>JoeP</span><span class='mini_badge badge_police'>Police</span>   <span class='reacted_text'>reacted</span> <span class='reactor'>Violently</span>
+                                </div>
+                                <div style='height:5px'></div>
+                                <div class='user_reaction'>
+                                        <span class='reactor'>JamesP</span><span class='mini_badge badge_protester'>Protester</span>   <span class='reacted_text'>reacted</span> <span class='reactor'>Violently</span>
+                                </div>
+                                <div style='height:5px'></div>
+                                <div class='user_reaction'>
+                                        <span class='reactor'>LillyP</span><span class='mini_badge badge_protester'>Protester</span>   <span class='reacted_text'>reacted</span> <span class='reactor'>Non-Violently</span>
+                                </div>
+                                <div style='height:5px'></div>
+                                
+                                <div class='user_reaction'>
+                                        <span class='reactor'>End of Round 2:</span><span class='current_score_display'><span class='current_score_num'>3</span><span class='current_score_num'> - </span><span class='current_score_num'>3</span></span><span class='mini_badge badge_protester' style='margin-left:5px'>Protesters</span>
+                                </div>
+                                -->
+                            </div>
+                            
+                        </div>
+                        <div style='height:10px'></div>
                         <div class='full_board'>
                             <table style='width:100%;margin:0 auto;'>
                                 <tr>
