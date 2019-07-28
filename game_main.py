@@ -2,6 +2,7 @@ import flask, random, string
 import game_user, json, pusher
 import game_manager, os, re
 from werkzeug import secure_filename
+import user_manager, functools
 
 
 app = flask.Flask(__name__)
@@ -19,6 +20,7 @@ pusher_client = pusher.Pusher(
 )
 
 def is_loggedin(f):
+    @functools.wraps(f)
     def wrapper(*args, **kwargs):
         if all(b is None for _, b in flask.session.items()):
             return flask.redirect('/')
@@ -41,10 +43,17 @@ def login():
 
 @app.route('/login_user')
 def login_user():
-    for a, b in game_user.TestUser.get_user_login(**json.loads(flask.request.args.get('payload'))).to_dict.items():
-        flask.session[a] = b
-    return flask.jsonify({'success':'True'})
+    _result = user_manager.User.get_user(int(flask.request.args.get('role')), **json.loads(flask.request.args.get('payload')))
+    if _result:
+        flask.session['id'] = int(_result.id)
+        flask.session['role'] = int(_result.role)
+    return flask.jsonify({'success':'True' if _result else 'False'})
 
+
+@app.route('/dashboard', methods=['GET'])
+@is_loggedin
+def dashboard():
+    return flask.render_template('student_dashboard.html', user = user_manager.User.get_user(flask.session['role'], id=flask.session['id']))
 
 @app.route('/game/<val>/<tuser>', methods=['GET'])
 @is_loggedin
@@ -73,6 +82,7 @@ def update_gametime():
     game_manager.Game.update_gametime(json.loads(flask.request.args.get('payload')))
     return flask.jsonify({'success':'True'})
 
+
 @app.route('/get_scores')
 def get_scores():
     return flask.jsonify({'scores':game_manager.Game.get_scores(json.loads(flask.request.args.get('payload')))})
@@ -99,17 +109,15 @@ def pusher_authentication():
     return json.dumps(auth)
 
 
-@app.route('/student_dashboard', methods=['GET'])
-def student_dashboard():
-    return flask.render_template('student_dashboard.html')
-
 @app.route('/create', methods=['GET'])
+@is_loggedin
 def create():
-    return flask.render_template('new_game.html')
+    return flask.render_template('new_game.html', user = user_manager.User.get_user(flask.session['role'], id=flask.session['id']))
 
 @app.route('/add-class', methods=['GET'])
+@is_loggedin
 def create_class():
-    return flask.render_template('create_class.html')
+    return flask.render_template('create_class.html', user = user_manager.User.get_user(flask.session['role'], id=flask.session['id']))
 
 @app.route('/test_post', methods=['POST'])
 def test_post():
@@ -117,7 +125,7 @@ def test_post():
     filename = secure_filename(_file.filename)
     _id, _ext = len(os.listdir("class_rosters"))+1, re.findall("(?<=\.)\w+$", filename)[0]
     _file.save(os.path.join(app.config['UPLOAD_FOLDER'], f'class_roster{_id}.{_ext}'))
-    return flask.redirect(f'/class/{game_manager.Classes.create_class(flask.request.form["classname"], _id)}')
+    return flask.redirect(f'/class/{game_manager.Classes.create_class(flask.request.form["classname"], _id, 1)}')
 
 @app.route('/class/<id>', methods=['GET'])
 def get_class(id):
