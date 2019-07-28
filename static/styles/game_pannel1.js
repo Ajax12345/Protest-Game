@@ -97,6 +97,30 @@ $(document).ready(function(){
                 `
                 $('.full_board').html(_html);
         }
+        $('.game_board_wrapper').append('<div style="height:20px"></div>\n');
+        var _survey_html = `
+            <div class='full_board survey_pannel'>
+                <div class='survey_prompt_text'>Before you go, please rate this game!</div>
+                <div style='height:30px'></div>
+                <table style='margin:0 auto'>
+                    <tr>
+                        <td id='start_td1' class='star_td'><i class="fas fa-star empty_star" data-starid='1'></i></td>
+                        <td id='start_td2' class='star_td'><i class="fas fa-star empty_star" data-starid='2'></i></td>
+                        <td id='start_td3' class='star_td'><i class="fas fa-star empty_star" data-starid='3'></i></td>
+                        <td id='start_td4' class='star_td'><i class="fas fa-star empty_star" data-starid='4'></i></td>
+                        <td id='start_td5' class='star_td'><i class="fas fa-star empty_star" data-starid='5'></i></td>
+                    </tr>
+                </table>
+                <div style='height:30px'></div>
+                <div class='survey_prompt_text'>Comments (Optional)</div>
+                <div style='height:15px'></div>
+                <textarea class='larger_comments'></textarea>
+                <div style='height:15px'></div>
+                <div class='submit_survey'>Submit Survey</div>
+            </div>
+            <div style='height:100px'></div>
+        `
+        $('.game_board_wrapper').append(_survey_html);
         adjust_main_wrappers();
     }
     function select_proper_chat(){
@@ -623,6 +647,68 @@ $(document).ready(function(){
               //Do Something to handle error
             }
           });
+          
+    });
+    $('.game_board_wrapper').on('click', '.empty_star', function(){
+        var _id = parseInt($(this).data('starid'));
+        $('.star_td').each(function(){
+            var new_id = parseInt($(this).prop('id').match('\\d+'));
+            if (new_id <= _id){
+                var _html = `
+                    <i class="fas fa-star full_star" data-starid='${new_id}'></i>
+                `
+                $("#start_td"+new_id.toString()).html(_html);
+            }
+            else{
+                var _html = `
+                    <i class="fas fa-star empty_star" data-starid='${new_id}'></i>
+                `
+                $("#start_td"+new_id.toString()).html(_html);
+            }
+        });
         
+      });
+      $('.game_board_wrapper').on('click', '.full_star', function(){
+        var _id = parseInt($(this).data('starid'));
+        $('.star_td').each(function(){
+            var new_id = parseInt($(this).prop('id').match('\\d+'));
+            if (new_id < _id){
+                var _html = `
+                    <i class="fas fa-star full_star" data-starid='${new_id}'></i>
+                `
+                $("#start_td"+new_id.toString()).html(_html);
+            }
+            else{
+                var _html = `
+                    <i class="fas fa-star empty_star" data-starid='${new_id}'></i>
+                `
+                $("#start_td"+new_id.toString()).html(_html);
+            }
+        });
+        
+      });
+      $('.game_board_wrapper').on('click', '.submit_survey', function(){
+        var _max_star = 0;
+        $('.full_star').each(function(){
+            var _val = parseInt($(this).data('starid'));
+            if (_val > _max_star){
+                _max_star = _val;
+            }
+        });
+        $.ajax({
+            url: "/post_review",
+            type: "get",
+            data: {payload: JSON.stringify({'rating':_max_star, 'comments':$('.larger_comments').val()})},
+            success: function(response) {
+                $('.survey_pannel').html('<div class="winner_banner_name">Thank you!</div>\n<div style="height:20px;"></div>\n<div class="survey_prompt_text">redirecting...</div>')
+                setTimeout(function(){
+                    window.location.replace('/dashboard');
+                }, 2000);
+                
+            },
+            error: function(xhr) {
+              //Do Something to handle error
+            }
+        });
     });
 });
