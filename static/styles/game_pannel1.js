@@ -26,11 +26,38 @@ $(document).ready(function(){
 
         add_new_marker(data);
     });
+    var history = pusher.subscribe('history');
+    history.bind('update-history'+$('.game_name').data('gameid'), function(data){
+        console.log(data);
+        update_running_history_reaction(data);
+    });
     var scores = pusher.subscribe('scores');
     scores.bind('update-scores'+$('.game_name').data('gameid'), function(data) {
         console.log(data);
+        var _id = $('.history_round_label').html().match('\\d+');
         update_police_score(data.police);
         update_protester_score(data.protesters);
+        var _police_score = parseInt($(".__police_score_display").text());
+        var _protester_score = parseInt($(".__protester_score_display").text());
+        var winner_lower = 'police';
+        var winner_upper = 'Police'
+        if (_police_score < _protester_score){
+            winner_lower = 'protester';
+            winner_upper = 'Protesters';
+        }
+        else if (_police_score === _protester_score){
+            winner_lower = 'draw';
+            winner_upper = 'Draw'
+        }
+        var _html = `
+        <div class='user_reaction'>
+            <span class='reactor'>End of Round ${_id}:</span><span class='current_score_display'><span class='current_score_num'>${_police_score}</span><span class='current_score_num'> to </span><span class='current_score_num'>${_protester_score}</span></span><span class='mini_badge badge_${winner_lower}' style='margin-left:5px'>${winner_upper}</span>
+        </div>
+        <div style="height:5px"></div>
+        `
+        $(".inner_move_history").append(_html);
+        scroll_history();
+        
         
         if (data.keepgoing){
             $('.reaction_display_table').css('display', 'block');
@@ -45,6 +72,16 @@ $(document).ready(function(){
         
         
     });
+    function update_running_history_reaction(data){
+        var _html = `
+            <div class='user_reaction'>
+                ${data.html}
+            </div>
+            <div style='height:5px'></div>
+        `;
+        $('.inner_move_history').append(_html);
+        scroll_history();
+    }
     function generate_victory_pannel(){
         var _winner = 'Police';
         var _p1_score = parseInt($('.__police_score_display').text());
