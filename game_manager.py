@@ -1,5 +1,7 @@
 import typing, json, game_utilites
 import pusher, collections, re, os
+import pandas as pd
+import user_manager, tigerSqlite
 pusher_client = pusher.Pusher(
   app_id='814342',
   key='f7e3f6c14176cdde1625',
@@ -51,7 +53,7 @@ class Game:
     @classmethod
     def can_add_reaction(cls, _payload:dict) -> dict:
         _data = json.load(open('game_data.json'))
-        return {'can_add_reaction':len(_data['round']) < 3 and all(any(c['player'] == i['playerid'] for c in _data['board']) for i in _data['players'])}
+        return {'can_add_reaction':len(_data['rounds']) < 3 and all(any(c['player'] == i['playerid'] for c in _data['board']) for i in _data['players']), 'scores':json.dumps(_data['score'])}
 
     @classmethod
     def log_message(cls, _payload:dict) -> dict:
@@ -118,10 +120,24 @@ class Game:
         
 
 class Classes:
+    """
+    filename:student_classes.db
+    tablename:classes
+    columns:id real, data text
+    """
     @classmethod
-    def csv_create_class(cls, _name:str, _filename:str) -> int:
-        return 3
+    def csv_create_class(cls, _name:str, _filename:str, _maker:int) -> int:
+        pass
     @classmethod
-    def create_class(cls, _name:str, _id:int) -> int:
+    def xlsx_create_class(cls, _name:str, _filename:str, _maker:int) -> int:
+        _data = pd.read_excel(f'class_rosters/{_filename}')
+        new_data = list(zip(list(_data['Student']), list(_data['E-mail Address'])))
+        _new_rows = [{'name':' '.join(a.split(', ')[::-1]), 'email':b, 'role':False} for a, b in new_data]
+        final_rows = [user_manager.User.add_user(i).__dict__ for i in _new_rows]
+        _new_id = (lambda x:1 if not x else max(x)+1)([a for a, _ in tigerSqlite.Sqlite('student_classes.db').get_id_data('classes')])
+        tigerSqlite.Sqlite('student_classes.db').insert('classes', ('id', _new_id), ('data', {'name':_name, 'owner':_maker, 'students':[{'classid':i, **a} for i, a in enumerate(final_rows, 1)]}))
+        return _new_id
+    @classmethod
+    def create_class(cls, _name:str, _id:int, _maker:int) -> int:
         _file = [i for i in os.listdir('class_rosters') if i.startswith(f'class_roster{_id}')][0]
-        return getattr(cls, f'{_file.split(".")[-1]}_create_class')(_name, _file)
+        return getattr(cls, f'{_file.split(".")[-1]}_create_class')(_name, _file, _maker)
