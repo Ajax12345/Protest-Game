@@ -128,8 +128,12 @@ $(document).ready(function(){
             success: function(response) {
                 if (response.can_add_reaction){
                     $('.reaction_display_table').css('display', 'block');
-                    adjust_main_wrappers();
+                    
                 }
+                var scores = JSON.parse(response.scores);
+                update_protester_score(scores.protesters);
+                update_police_score(scores.police);
+                adjust_main_wrappers();
             },
             error: function(xhr) {
               //Do Something to handle error
