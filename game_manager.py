@@ -15,6 +15,13 @@ class _message:
         self.__dict__ = _data
 
 class Game:
+    """
+    filename:game_reviews.db
+    tablename:reviews
+    columns:data text
+    ------------------------
+    """
+
     def __init__(self, _payload:dict, _user:str) -> None:
         self.__dict__ = {**_payload, 'loggedin':_user}
         self.game_role = [i for i in self.players if i['name'] == self.loggedin][0]
@@ -116,6 +123,10 @@ class Game:
         with open('game_data.json', 'w') as f:
             json.dump(new_data, f)
         return {'success':'False'}
+
+    @classmethod
+    def post_review(cls, _payload:dict) -> None:
+        tigerSqlite.Sqlite('game_reviews.db').insert('reviews', ('data', _payload))
         
         
 
