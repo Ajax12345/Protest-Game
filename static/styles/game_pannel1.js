@@ -34,6 +34,7 @@ $(document).ready(function(){
         
         if (data.keepgoing){
             $('.reaction_display_table').css('display', 'block');
+            $('.history_round_label').html('Round ' + (parseInt($('.history_round_label').text().match('\\d+'))+1).toString());
         }
         else{
             $('.reaction_display_table').css('display', 'none');
@@ -354,6 +355,11 @@ $(document).ready(function(){
         var d = $('.chat_main');
         d.scrollTop(d.prop("scrollHeight"));
     }
+    function scroll_history(){
+        var d = $('.inner_move_history');
+        d.scrollTop(d.prop("scrollHeight"));
+    }
+    scroll_history();
     function load_message_history(){
         $.ajax({
             url: "/get_message_history",
