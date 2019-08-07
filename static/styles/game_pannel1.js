@@ -4,6 +4,8 @@ $(document).ready(function(){
     get_gametime();
     select_proper_chat();
     can_add_reaction();
+    $("#mission_modal").modal('toggle');
+    load_content();
     Pusher.logToConsole = true;
 
     var pusher = new Pusher('f7e3f6c14176cdde1625', {
@@ -81,6 +83,25 @@ $(document).ready(function(){
         `;
         $('.inner_move_history').append(_html);
         scroll_history();
+    }
+    function text_load(_id, _str, _ind){
+        $("#"+_id).append(_str[_ind]);
+        setTimeout(function(){
+            text_load(_id, _str, _ind+1);
+        }, 50);
+    }
+    function load_content_text(_id, _str){
+        //$("#"+_id).append("<div class='cursor'></div>")
+        $("#"+_id+'_cursor').html("<div class='cursor'></div>");
+        text_load(_id, _str, 0);
+        $('.cursor').remove();
+    }
+    function load_content(){
+        var _payload = {'location':'Kiev, Ukraine', 'date':"September 2, 2013", 'overview':'As reports of Russian backing and goverment corruption increase, so too does the furvor of the protesters', 'mission':'You must rely rocks to the men at the tire barricade'}
+        var _ids = ['content_location', 'content_date', 'content_overview', 'content_mission'];
+        for (var i = 0; i < _ids.length; i++){
+            load_content_text(_ids[i], _payload[_ids[i].split('_')[1]]);
+        }
     }
     function generate_victory_pannel(){
         var _winner = 'Police';
