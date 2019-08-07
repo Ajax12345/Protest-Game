@@ -14,6 +14,36 @@ class _message:
     def __init__(self, _data:dict) -> None:
         self.__dict__ = _data
 
+class ReactionObj(typing.NamedTuple):
+    name:str
+    role:str
+    reaction:str
+    @property
+    def role_text(self):
+        return self.role.capitalize()
+
+class Move:
+    def __init__(self, _data:dict, _round:int, _users:dict) -> None:
+        self.data, self.round, self.users = _data, _round, _users
+    def __iter__(self):
+        for i in self.data['moves']:
+            yield ReactionObj(self.users[i['player']], i['role'], i['reaction'].capitalize())
+
+    @property
+    def running_score_police(self):
+        return int(self.data['running_score']['police'])
+    @property
+    def running_score_protester(self):
+        return int(self.data['running_score']['protesters'])
+
+    @property
+    def running_score_winner(self):
+        return 'police' if self.running_score_police > self.running_score_protester else 'draw' if self.running_score_police == self.running_score_protester else 'protester'
+    
+    @property
+    def running_winner_text(self):
+        return f'{self.running_score_winner.capitalize()}{"s" if self.running_score_winner == "protester" else ""}'
+
 class Game:
     """
     filename:game_reviews.db
@@ -68,6 +98,15 @@ class Game:
         with open('game_data.json', 'w') as f:
             json.dump({**_data, f'{_payload["role"]}_chat':_data[f'{_payload["role"]}_chat']+[_payload['payload']]}, f)
         return {'success':'True'}
+
+    @property
+    def game_history(self):
+        _user_convert = {int(i['playerid']):i['name'] for i in self.players}
+        yield from [Move(a, i, _user_convert) for i, a in enumerate(self.rounds, 1)]
+
+    @property
+    def current_round(self):
+        return len(self.rounds)+1
     
     @classmethod
     def update_gametime(cls, _payload:dict) -> None:
@@ -108,7 +147,11 @@ class Game:
 
     @classmethod
     def log_reaction(cls, _payload:dict) -> dict:
+        print('payload in log_reaction', _payload)
+        #{'role': 'protester', 'gameid': 1, 'player': 3, 'reaction': 'violent'}
         _data = json.load(open('game_data.json'))
+        _user_convert = {int(i['playerid']):i['name'] for i in _data['players']}
+        pusher_client.trigger('history', f'update-history{_payload["gameid"]}', {'html':f"<span class='reactor'>{_user_convert[int(_payload['player'])]}</span><span class='mini_badge badge_{_payload['role']}'>{_payload['role'].capitalize()}</span>   <span class='reacted_text'>reacted</span> <span class='reactor'>{_payload['reaction'].capitalize()}</span>"})
         new_data = {**_data, 'round':_data['round']+[_payload]}
         if all(any(int(i['player']) == int(c['playerid']) for i in new_data['round']) for c in new_data['players']):
             convert = {'violent':1, 'nonviolent':0}
@@ -128,7 +171,22 @@ class Game:
     def post_review(cls, _payload:dict) -> None:
         tigerSqlite.Sqlite('game_reviews.db').insert('reviews', ('data', _payload))
         
-        
+
+class _class:
+    def __init__(self, _data:dict) -> None:
+        self.data = _data
+    def __repr__(self) -> str:
+        return json.dumps(self.data)
+    def __getattr__(self, _attr:str) -> typing.Any:
+        return self.data[_attr]
+
+class All_classes:
+    def __init__(self, _classes:typing.List[_class]) -> None:
+        self.classes = _classes
+    def __bool__(self) -> bool:
+        return bool(self.classes)
+    def __iter__(self):
+        yield from self.classes    
 
 class Classes:
     """
@@ -152,3 +210,7 @@ class Classes:
     def create_class(cls, _name:str, _id:int, _maker:int) -> int:
         _file = [i for i in os.listdir('class_rosters') if i.startswith(f'class_roster{_id}')][0]
         return getattr(cls, f'{_file.split(".")[-1]}_create_class')(_name, _file, _maker)
+
+    @classmethod
+    def get_maker_classes(cls, _maker:id) -> typing.List[typing.Callable]:
+        return All_classes([_class({'id':int(a), **b}) for a, b in tigerSqlite.Sqlite('student_classes.db').get_id_data('classes') if int(b['owner']) == _maker])
