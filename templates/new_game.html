@@ -1,0 +1,252 @@
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width">
+        <title>Create Game</title>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+        <link href="https://fonts.googleapis.com/css?family=Fira+Sans|Muli|Roboto&display=swap" rel="stylesheet">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+        <link rel='stylesheet' href='/static/styles/new_game.css'>
+        <script src='/static/styles/new_game.js'></script>
+    </head>
+    <body>
+            <div class='header'>
+                    <table style='width:100%'>
+                        <tr>
+                            <td style='width:70%'>
+                                {%if user.role%}
+                                    <a href='/add-class' style='color:white;text-decoration:none;'><span class='new_class'><i class="fas fa-plus"></i> New Class</span></a>
+                                {%endif%}
+                            </td>
+                            <td style='width:15%'>
+                                {%if user.role%}
+                                    <a href='/create' style='color:white;text-decoration:none;'><span class='new_game'><i class="fas fa-plus"></i> New Game</span></a>
+                                {%endif%}
+                                
+                            </td>
+                            <td style='width:20%;text-align:center;'>
+                                <!--
+                                <span class='logged_in_user'>James Petullo</span>
+                                -->
+                                <div class='user_name'><span class='hello_text'>Hello,</span> {{user.name}}</div>
+                                
+                            </td>
+                            <td style='width:5%'></td>
+                        </tr>
+                    </table>
+                </div>
+        <div style='height:50px'></div>
+        <table style='width:60%;margin:0 auto;'>
+            <tr>
+                <td style='width:80%'><div class='new_game_text'>New Game</div></td>
+                <td style='width:20%'><a href='/dashboard' style='color:white;text-decoration:underline;'><div class="cancel_button">Cancel</div></a></td>
+            </tr>
+        </table>
+        <div style='height:10px'></div>
+        <table style='width:60%;margin:0 auto;'>
+            <tr>
+                <td style='width:60%'>
+                    <div class='game_input_wrapper'>
+                    <div class='game_name_outer'>
+                        
+                        <table style='width:100%'>
+                            <tr>
+                                <td style='width:20%'><div class='game_name_text'>Name</div></td>
+                                <td style='width:80%'><input type='text' class='game_name' placeholder='Add name'></td>
+                            </tr>
+                        </table>
+                        <div style='height:20px'></div>
+                        <table style='width:100%'>
+                            <tr>
+                                <td style='width:20%'><div class='game_name_text'>Board</div></td>
+                                <td style='width:80%'>
+                                    <table style='width:70%'>
+                                        <tr>
+                                            <td style='width:50%'>
+                                                <div class='board_state board_state_left board_state_selected board_display' id='board_state_display' data-state='display'>Display</div>
+                                            </td>
+                                            <td style='width:50%'>
+                                                <div class='board_state board_state_right board_display' id='board_state_hide' data-state='hide'>Hide</div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        <div style='height:20px'></div>
+                        <table style='width:100%'>
+                            <tr>
+                                <td style='width:20%'><div class='game_name_text'>Content</div></td>
+                                <td style='width:80%'>
+                                    <table style='width:70%'>
+                                        <tr>
+                                            <td style='width:50%'>
+                                                <div class='board_state board_state_left board_state_selected added_content' id='add_content_none' data-state='none'>None</div>
+                                            </td>
+                                            <td style='width:50%'>
+                                                <div class='board_state board_state_right added_content' id='add_content_add' data-state='add'>Add</div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        <div style='height:20px'></div>
+                        <table style='width:100%'>
+                            <tr>
+                                <td style='width:20%'><div class='game_name_text'>Rounds</div></td>
+                                <td style='width:80%'>
+                                    
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div style='height:20px'></div>
+                    <div class='add_users_pannel'>
+                        <div class='game_name_text'>Add Players</div>
+                           <div style='height:20px'></div>
+                           <div class='outer_student_listing'>
+                                <div class='add_class_prompt'>Please select a class</div>
+                           </div>
+                           
+                        <!--
+                        <div class='game_name_text'>Add Players</div>
+                        <div style='height:20px'></div>
+                        <div class='student_listing'>
+                            <table style='width:100%'>
+                                <tr>
+                                    <td style='width:60%'><div class='student_name'>James Petullo</div></td>
+                                    <td class='student_role_select' id='student3'>
+                                        <table>
+                                            <tr>
+                                                <td id='protester3'><span class='protester_role role_option' data-sid='3'>Protester</span></td>
+                                                <td id='police3'><span class='police_role role_option' data-sid='3'>Police</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                        </div>
+                        <div style='height:10px'></div>
+                        <div class='student_listing'>
+                                <table style='width:100%'>
+                                    <tr>
+                                        <td style='width:60%'><div class='student_name'>John Smith</div></td>
+                                        <td class='student_role_select' id='student1'>
+                                                <table>
+                                                        <tr>
+                                                            <td id='protester1'><span class='protester_role role_option' data-sid='1'>Protester</span></td>
+                                                            <td id='police1'><span class='police_role role_option' data-sid='1'>Police</span></td>
+                                                        </tr>
+                                                    </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                                
+                        </div>
+                        <div style='height:10px'></div>
+                        <div class='student_listing'>
+                                <table style='width:100%'>
+                                    <tr>
+                                        <td style='width:60%'><div class='student_name'>Richard Johnson</div></td>
+                                        <td class='student_role_select' id='student2'>
+                                                <table>
+                                                        <tr>
+                                                            <td id='protester2'><span class='protester_role role_option' data-sid='2'>Protester</span></td>
+                                                            <td id='police2'><span class='police_role role_option' data-sid='2'>Police</span></td>
+                                                        </tr>
+                                                    </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                                
+                        </div>
+                    -->
+                    </div>
+                    </div>
+                </td>
+                <td style='width:40%'>
+                    <div class='class_display_wrapper'>
+                        {%if classes%}
+                            {%for class in classes%}
+                                <div class='class_card' id='classcard{{class.id}}' data-payload='{{class}}'>
+                                    <table style='width:100%'>
+                                        <tr>
+                                            <td style='width:70%'>
+                                                <div class='classname'>{{class.name}}</div>
+                                            </td>
+                                            <td style='width:30%'><div class='action_box' data-classid='{{class.id}}'><i class="fas fa-plus" style='font-size:1.5em;'></i></div></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div style='height:20px;width:95%;float:right;'></div>
+                            {%endfor%}
+                        {%else%}
+                            <div class='no_classes_found'><i>You have not created any classes.</i> <a href='/add-class' class='create_class_href' style='color:#E62C78;'>Create Class.</a></div> 
+                        {%endif%}
+                    </div>
+
+                </td>
+            </tr>
+        </table>
+        <div class="modal" id="content_addition_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header" style='border-bottom:none'>
+                    <div class='modal_content_header'>Add Game Content</div>
+                </div>
+                <div class="modal-body">
+                    <table style="width:100%">
+                        <tbody><tr>
+                            <td style="width:20%"><div class="game_name_text">Location</div></td>
+                            <td style="width:80%"><input type="text" class="input_box_create" id='content_location' placeholder="Add location"></td>
+                         </tr>
+                        </tbody>
+                    </table>
+                    <div style='height:10px'></div>
+                    <table style="width:100%">
+                        <tbody><tr>
+                            <td style="width:20%"><div class="game_name_text">Date</div></td>
+                            <td style="width:80%"><input type="text" class="input_box_create" id='content_date' placeholder="Add date"></td>
+                         </tr>
+                        </tbody>
+                    </table>
+                    <div style='height:10px'></div>
+                    <table style="width:100%">
+                        <tbody><tr>
+                            <td style="width:20%"><div class="game_name_text">Overview</div></td>
+                            <td style="width:80%"><input type="text" class="input_box_create" id='content_overview' placeholder="Add overview"></td>
+                         </tr>
+                        </tbody>
+                    </table>
+                    <div style='height:10px'></div>
+                    <table style="width:100%">
+                        <tbody><tr>
+                            <td style="width:20%"><div class="game_name_text">Police Mission</div></td>
+                            <td style="width:80%"><input type="text" class="input_box_create" id='content_missionp' placeholder="Add mission (Police)"></td>
+                         </tr>
+                        </tbody>
+                    </table>
+                    <div style='height:10px'></div>
+                    <table style="width:100%">
+                        <tbody><tr>
+                            <td style="width:20%"><div class="game_name_text">Protester Mission</div></td>
+                            <td style="width:80%"><input type="text" class="input_box_create" id='content_missionpr' placeholder="Add mission (Protester)"></td>
+                         </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer" style='border-top:none'>
+                  
+                  <div class='save_content'>Save</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style='height:50px'></div>
+    </body>
+</html>
