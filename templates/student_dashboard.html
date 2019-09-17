@@ -2,7 +2,7 @@
     <head>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width">
-        <title>Protest Test</title>
+        <title>Dashboard</title>
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
         <link href="https://fonts.googleapis.com/css?family=Fira+Sans|Muli|Roboto&display=swap" rel="stylesheet">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -16,15 +16,33 @@
         <div class='header'>
             <table style='width:100%'>
                 <tr>
-                    <td style='width:55%'></td>
-                    <td style='width:20%'></td>
+                    <td style='width:40%'></td>
+                    <td style='width:15%'>
+                        {%if user.role%}
+                            <a href='/create-content' style='color:white;text-decoration:none;'>
+                                <span class='new_class'><i class="fas fa-plus"></i> New Content</span>
+                            </a>
+                        {%endif%}
+                    </td>
+                    <td style='width:15%'>
+                        {%if user.role%}
+                            <a href='/add-class' style='color:white;text-decoration:none;'><span class='new_class'><i class="fas fa-plus"></i> New Class</span></a>
+                        {%endif%}
+                    </td>
+                    <td style='width:15%'>
+                        {%if user.role%}
+                            <a href='/create' style='color:white;text-decoration:none;'><span class='new_game'><i class="fas fa-plus"></i> New Game</span></a>
+                        {%endif%}
+                        
+                    </td>
                     <td style='width:20%;text-align:center;'>
                         <!--
                         <span class='logged_in_user'>James Petullo</span>
                         -->
-                        <div class='user_name'><span class='hello_text'>Hello,</span> James Petullo</div>
-                        <td style='width:5%'></td>
+                        <div class='user_name'><span class='hello_text'>Hello,</span> {{user.name}}</div>
+                        
                     </td>
+                    <td style='width:5%'></td>
                 </tr>
             </table>
         </div>
@@ -33,27 +51,25 @@
             <table style='margin-left:8px;'>
                 <tr>
                     <td><div class='all_game_text'>All Games</div></td>
-                    <td><span class='game_count'>4</span></td>
+                    <td><span class='game_count'>{{user.game_num}}</span></td>
                 </tr>
             </table>
             <div style='height:20px'></div>
+            {%if user.has_games%}
             <div class='game_card_wrapper'>
+                {%for game in user%}
+                {%if not game.has_started%}
                 <span class='game_card'>
                     <table style='width:100%'>
                         <tr>
-                            <td style='width:70%'><div class='game_name'>Test Game</div></td>
+                            <td style='width:70%'><div class='game_name'>{{game.name}}</div></td>
                             <td style='width:30%'><div class='game_time not_started'>0:00</div></td>
                         </tr>
                     </table>
                     <div style='height:5px'></div>
                     <span class='not_started_tag'>not started</span>
                     <div style='height:20px'></div>
-                    <div class='people_text'>Players</div>
-                    <div style='height:10px'></div>
-                    <div class='class_users_wrapper'>
-                        <span class='class_display'>Games 101</span>
-                    </div>
-                    <div style='height:15px'></div>
+                    
                     <!--<div class='score_spacer'></div>-->
                     <div style='height:10px'></div>
                     <table style='width:100%'>
@@ -78,31 +94,29 @@
                     <div style='height:30px'></div>
                     <table>
                         <tr>
-                            <td><div class='go_to_game'>Gameplay</div></td>
+                            <td><div class='go_to_game' data-gameid='{{game.id}}'>Gameplay</div></td>
                             <td style='width:50%'>
+                                <!--
                                 <div class='manage_game'>Manage</div>
                                 <div class='manage_underscore'></div>
+                                -->
                             </td>
                         </tr>
                     </table>
                 </span>
+                {%elif game.has_started%}
                 <!---->
                 <span class='game_card'>
                         <table style='width:100%'>
                             <tr>
-                                <td style='width:70%'><div class='game_name'>Game 2</div></td>
-                                <td style='width:30%'><div class='game_time game_started'>0:00</div></td>
+                                <td style='width:70%'><div class='game_name'>{{game.name}}</div></td>
+                                <td style='width:30%'><div class='game_time game_started'>{{game.time}}</div></td>
                             </tr>
                         </table>
                         <div style='height:5px'></div>
                         <span class='started_tag'>in progress</span>
+                        
                         <div style='height:20px'></div>
-                        <div class='people_text'>Players</div>
-                        <div style='height:10px'></div>
-                        <div class='class_users_wrapper'>
-                            <span class='class_display'>Class 1</span>
-                        </div>
-                        <div style='height:15px'></div>
                         <!--<div class='score_spacer'></div>-->
                         <div style='height:10px'></div>
                         <table style='width:100%'>
@@ -111,7 +125,7 @@
                                 <td style='width:10%'><img src='/static/styles/raised-fist.svg' style='width:25px;'></td>
                                 -->
                                 <td style='width:80%'><div class='side_name winning_team'>Protesters</div></td>
-                                <td style='width:20%'><div class='score_val winning_score'>2</div></td>
+                                <td style='width:20%'><div class='score_val winning_score'>{{game.protester_score}}</div></td>
                             </tr>
                         </table>
                         <div style='height:5px'></div>
@@ -121,37 +135,36 @@
                                 <td style='width:10%'><img src='/static/styles/eared-shield-1.svg' style='width:30px;'></td>
                                 -->
                                 <td style='width:80%'><div class='side_name losing_team'>Police</div></td>
-                                <td style='width:20%'><div class='score_val losing_score'>0</div></td>
+                                <td style='width:20%'><div class='score_val losing_score'>{{game.police_score}}</div></td>
                             </tr>
                         </table>
                         <div style='height:30px'></div>
                         <table>
                             <tr>
-                                <td><div class='go_to_game'>Gameplay</div></td>
+                                <td><div class='go_to_game' data-gameid='{{game.id}}'>Gameplay</div></td>
                                 <td style='width:50%'>
+                                    <!---
                                     <div class='manage_game'>Manage</div>
                                     <div class='manage_underscore'></div>
+                                    -->
                                 </td>
                             </tr>
                         </table>
                     </span>
+                    {%else%}
                     <!---->
                     <span class='game_card'>
                             <table style='width:100%'>
                                 <tr>
-                                    <td style='width:70%'><div class='game_name'>Test Game</div></td>
-                                    <td style='width:30%'><div class='game_time finished_time'>5:31</div></td>
+                                    <td style='width:70%'><div class='game_name'>{{game.name}}</div></td>
+                                    <td style='width:30%'><div class='game_time finished_time'>{{game.time}}</div></td>
                                 </tr>
                             </table>
                             <div style='height:5px'></div>
-                            <span class='not_started_tag'>9 Jul 2019</span>
+                            <span class='not_started_tag'>{{game.finished_date}}</span>
+                     
+                            
                             <div style='height:20px'></div>
-                            <div class='people_text'>Players</div>
-                            <div style='height:10px'></div>
-                            <div class='class_users_wrapper'>
-                                <span class='class_display'>Games 101</span>
-                            </div>
-                            <div style='height:15px'></div>
                             <!--<div class='score_spacer'></div>-->
                             <div style='height:10px'></div>
                             <table style='width:100%'>
@@ -159,9 +172,15 @@
                                     <!--
                                     <td style='width:10%'><img src='/static/styles/raised-fist.svg' style='width:25px;'></td>
                                     -->
-                                    <td style='width:80%'><div class='side_name losing_team'>Protesters</div></td>
-                                    <td style='width:15%'><div class='score_val losing_score'>1</div></td>
+                                    {%if game.is_tie%}
+                                    <td style='width:80%'><div class='side_name winning_team'>Police</div></td>
+                                    <td style='width:15%'><div class='score_val winning_score'>{{game.police_score}}</div></td>
                                     <td style='width:5%'></td>
+                                    {%else%}
+                                    <td style='width:80%'><div class='side_name losing_team'>{{game.losing_side}}</div></td>
+                                    <td style='width:15%'><div class='score_val losing_score'>{{game.final_score.loser}}</div></td>
+                                    <td style='width:5%'></td>
+                                    {%endif%}
                                 </tr>
                             </table>
                             <div style='height:5px'></div>
@@ -170,9 +189,15 @@
                                     <!--
                                     <td style='width:10%'><img src='/static/styles/eared-shield-1.svg' style='width:30px;'></td>
                                     -->
-                                    <td style='width:80%'><div class='side_name winning_team'>Police</div></td>
-                                    <td style='width:15%'><div class='score_val winning_score'>3</div></td>
+                                    {%if game.is_tie%}
+                                    <td style='width:80%'><div class='side_name winning_team'>Protesters</div></td>
+                                    <td style='width:15%'><div class='score_val winning_score'>{{game.protester_score}}</div></td>
+                                    <td style='width:5%'></td>
+                                    {%else%}
+                                    <td style='width:80%'><div class='side_name winning_team'>{{game.winning_side}}</div></td>
+                                    <td style='width:15%'><div class='score_val winning_score'>{{game.final_score.winner}}</div></td>
                                     <td style='width:5%'><i class="fas fa-caret-left" style='float:right;font-size:1.3em;'></i></td>
+                                    {%endif%}
                                 </tr>
                             </table>
                             <div style='height:30px'></div>
@@ -180,15 +205,25 @@
                                 <tr>
                                     <td><div class='go_to_game'>Gameplay</div></td>
                                     <td style='width:50%'>
+                                        <!--
                                         <div class='manage_game'>Manage</div>
                                         <div class='manage_underscore'></div>
+                                        -->
                                     </td>
                                 </tr>
                             </table>
                         </span>
+                        {%endif%}
                         <!---->
-                
+                        {%endfor%}
             </div>   
+            {%else%}
+                <div class='no_games_spacer'></div>
+                <div style='height:20px'></div>
+                <div class='no_games_created'><i>You have no games</i></div>
+            {%endif%}
+            <div style='height:50px'></div>
+            <div class='refresh_test_game'>Refresh Test Game</div>
         </div>
         
     </body>
