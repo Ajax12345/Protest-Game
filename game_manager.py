@@ -50,6 +50,9 @@ class Game:
     tablename:reviews
     columns:data text
     ------------------------
+    filename:games.db
+    tablename:games
+    columns:id real, data text
     """
 
     def __init__(self, _payload:dict, _user:str) -> None:
@@ -171,6 +174,11 @@ class Game:
     def post_review(cls, _payload:dict) -> None:
         tigerSqlite.Sqlite('game_reviews.db').insert('reviews', ('data', _payload))
         
+    @classmethod
+    @game_utilites.format_game_payload
+    @game_utilites.update_player_games
+    def create_game(cls, _payload:dict, _creator:dict) -> None:
+        tigerSqlite.Sqlite('games.db').insert('games', ('id', _payload['id']), ('data', _payload))
 
 class _class:
     def __init__(self, _data:dict) -> None:
