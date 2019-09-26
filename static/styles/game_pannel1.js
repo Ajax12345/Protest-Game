@@ -1,11 +1,14 @@
 $(document).ready(function(){
 
     load_message_history();
-    get_gametime();
+    //get_gametime();
     select_proper_chat();
     can_add_reaction();
-    $("#mission_modal").modal('toggle');
-    load_content();
+    var _running_game_time;
+    var _game_over = false;
+    var _has_added_reaction = false;
+    //$("#mission_modal").modal('toggle');
+    //load_content();
     Pusher.logToConsole = true;
 
     var pusher = new Pusher('f7e3f6c14176cdde1625', {
@@ -63,10 +66,12 @@ $(document).ready(function(){
         
         if (data.keepgoing){
             $('.reaction_display_table').css('display', 'block');
+            //load_time_limit(1);
             $('.history_round_label').html('Round ' + (parseInt($('.history_round_label').text().match('\\d+'))+1).toString());
         }
         else{
             $('.reaction_display_table').css('display', 'none');
+            _game_over = true;
             generate_victory_pannel();
         }
         //$('.reaction_display_table').css('display', 'block');
@@ -199,7 +204,7 @@ $(document).ready(function(){
         $("#board_cell_"+data.position[1].toString()+'_'+data.position[0].toString()).html(_htl); 
         if (data.candisplay){
             $('.reaction_display_table').css('display', 'block');
-            
+            //load_time_limit(1);
         }
         adjust_main_wrappers();
     }
@@ -211,7 +216,7 @@ $(document).ready(function(){
             success: function(response) {
                 if (response.can_add_reaction){
                     $('.reaction_display_table').css('display', 'block');
-                    
+                    //load_time_limit(1);
                 }
                 var scores = JSON.parse(response.scores);
                 update_protester_score(scores.protesters);
@@ -243,10 +248,82 @@ $(document).ready(function(){
             }
         });
     }
-
-    function update_timer(){
+    function log_no_response(){
+        console.log('---> in log response')
+        console.log(JSON.stringify({'name':$(".logged_in_user").text(), 'has_added_reaction':_has_added_reaction}));
+        if (!_has_added_reaction){
+            $.ajax({
+                url: "/log_reaction",
+                type: "get",
+                data: {payload: JSON.stringify({'role':$('.logged_in_user').data('role'), 'gameid':parseInt($('.game_name').data('gameid')), 'player':parseInt($('.logged_in_user').data('userid')), 'reaction':'nonviolent'})},
+                success: function(response) {
+                    if (response.success === 'True'){
+                        update_police_score(response.police);
+                        update_protester_score(response.protesters);
+                        if (response.keepgoing){
+                            $('.reaction_display_table').css('display', 'block');
+                            _has_added_reaction = false;
+                            //load_time_limit(1);
+                            
+                        }
+                        else{
+                            $('.reaction_display_table').css('display', 'none');
+                            _has_added_reaction = true;
+                        }
+                        //$('.reaction_display_table').css('display', 'block');
+                    }
+                    else{
+                        $('.reaction_display_table').css('display', 'none');
+                        _has_added_reaction = true;
+                    }
+                    adjust_main_wrappers();
+                    
+                },
+                error: function(xhr) {
+                  //Do Something to handle error
+                }
+              });
+        }
+        
+        
+    }
+    function start_countdown(){
         var minutes = parseInt($('.game_time').text().split(':')[0]);
         var seconds = parseInt($('.game_time').text().split(':')[1]);
+        if (seconds === 0){
+            if (minutes === 0){
+                log_no_response();
+            }
+            else{
+                minutes --;
+                seconds = 59;
+            }
+        }
+        else{
+            seconds--;
+        }
+        var _new_sec = seconds.toString();
+        if (seconds < 10){
+            _new_sec = '0'+_new_sec;
+        }
+        $('.game_time').html(minutes.toString()+':'+_new_sec);
+        if (minutes > 0 || _new_sec != '00'){
+            setTimeout(function(){
+                start_countdown();
+            }, 1000)
+        }
+        else{
+            log_no_response();
+        }
+        
+    }
+    function load_time_limit(limit){
+        $('.game_time').html("0:30");
+        start_countdown();
+    }
+    function update_timer(){
+        var minutes = parseInt(_running_game_time.split(':')[0]);
+        var seconds = parseInt(_running_game_time.split(':')[1]);
         seconds++;
         if (seconds === 60){
             seconds = 0;
@@ -256,7 +333,7 @@ $(document).ready(function(){
         if (seconds < 10){
             _s = '0'+seconds.toString();
         }
-        $('.game_time').html(minutes.toString()+':'+_s);
+        //$('.game_time').html(minutes.toString()+':'+_s);
         $.ajax({
             url: "/update_gametime",
             type: "get",
@@ -279,7 +356,7 @@ $(document).ready(function(){
             type: "get",
             data: {payload: JSON.stringify({'gameid':parseInt($('.game_name').data('gameid'))})},
             success: function(response) {
-              $('.game_time').html(response.time);
+                _running_game_time = response.time;
               
               
               update_timer();
@@ -391,8 +468,12 @@ $(document).ready(function(){
                         `;
                         $("#board_cell_"+_move.y.toString()+'_'+_move.x.toString()).html(_htl); 
                         if (response.candisplay){
+                            $('.loader_display').css('display', 'none');
                             $('.reaction_display_table').css('display', 'block');
+
+                            //load_time_limit(1);
                             adjust_main_wrappers();
+                            
                         }
                     }
 
@@ -684,7 +765,8 @@ $(document).ready(function(){
     });
     
     $('.game_display').on('click', '.violence_level', function(){
-        
+        $('.reaction_display_table').css('display', 'none');
+        //$('.loader_display').css('display', 'block');
         $.ajax({
             url: "/log_reaction",
             type: "get",
@@ -695,16 +777,22 @@ $(document).ready(function(){
                     update_protester_score(response.protesters);
                     if (response.keepgoing){
                         $('.reaction_display_table').css('display', 'block');
+                        //load_time_limit(1);
+                        _has_added_reaction = false;
                     }
                     else{
                         $('.reaction_display_table').css('display', 'none');
+
+                        _has_added_reaction = true;
                     }
                     //$('.reaction_display_table').css('display', 'block');
                 }
                 else{
                     $('.reaction_display_table').css('display', 'none');
+                    _has_added_reaction = true;
                 }
                 adjust_main_wrappers();
+                $('.loader_display').css('display', 'none');
                 
             },
             error: function(xhr) {
