@@ -79,6 +79,14 @@ class Game:
     def chat_role_data(self):
         return self.chat_role.lower()
 
+    @classmethod
+    def load_game_dict(cls, _payload:dict) -> dict:
+        _c = [b for a, b in tigerSqlite.Sqlite('test_game_db.db').get_id_data('games') if int(a) == int(_payload['gameid'])]
+        return None if not _c else _c[0]
+
+    @classmethod
+    def update_game_dict(cls, _payload:dict) -> None:
+        tigerSqlite.Sqlite('test_game_db.db').update('games', [('data', _payload)], [('id', int(_payload['id']))])
 
     @classmethod
     @game_utilites.validate_user
@@ -88,18 +96,17 @@ class Game:
 
     @classmethod
     def get_chat_history(cls, _payload:dict) -> typing.List[typing.NamedTuple]:
-        return list(map(_message, json.load(open('game_data.json'))[f'{_payload["role"]}_chat']))
+        return list(map(_message, cls.load_game_dict(_payload)[f'{_payload["role"]}_chat']))
 
     @classmethod
     def can_add_reaction(cls, _payload:dict) -> dict:
-        _data = json.load(open('game_data.json'))
+        _data = cls.load_game_dict(_payload)
         return {'can_add_reaction':len(_data['rounds']) < 3 and all(any(c['player'] == i['playerid'] for c in _data['board']) for i in _data['players']), 'scores':json.dumps(_data['score'])}
 
     @classmethod
     def log_message(cls, _payload:dict) -> dict:
-        _data = json.load(open('game_data.json'))
-        with open('game_data.json', 'w') as f:
-            json.dump({**_data, f'{_payload["role"]}_chat':_data[f'{_payload["role"]}_chat']+[_payload['payload']]}, f)
+        _data = cls.load_game_dict(_payload)
+        cls.update_game_dict({**_data, f'{_payload["role"]}_chat':_data[f'{_payload["role"]}_chat']+[_payload['payload']]})
         return {'success':'True'}
 
     @property
@@ -110,49 +117,46 @@ class Game:
     @property
     def current_round(self):
         return len(self.rounds)+1
+
     
     @classmethod
     def update_gametime(cls, _payload:dict) -> None:
         try:
-            _data = json.load(open('game_data.json'))
-            with open('game_data.json', 'w') as f:
-                json.dump({**_data, 'time':_payload['time']}, f)
+            _data = cls.load_game_dict(_payload)
+            cls.update_game_dict({**_data, 'time':_payload['time']})
         except:
             pass
 
     @classmethod
     def get_gametime(cls, _payload:dict) -> str:
-        return json.load(open('game_data.json'))['time']
+        return cls.load_game_dict(_payload)['time']
 
     @classmethod
     def get_scores(cls, _payload:dict) -> str:
-        return json.dumps(json.load(open('game_data.json'))['score'])
+        return json.dumps(cls.load_game_dict(_payload)['score'])
 
     @classmethod
     def add_player_position(cls, _payload:dict) -> dict:
-        _data = json.load(open('game_data.json'))
+        _data = cls.load_game_dict(_payload)
         if any(int(i['player']) == int(_payload['player']) for i in _data['board']):
             return {'success':'NA'}
         if all(i['position'] != [_payload['position']['x'], _payload['position']['y']] for i in _data['board']):
             _new_payload = {'player':_payload['player'], 'role':_payload['role'], 'position':[_payload['position']['x'], _payload['position']['y']]}
             _updated_data = {**_data, 'board':_data['board']+[_new_payload]}
-            with open('game_data.json', 'w') as f:
-                json.dump(_updated_data, f)
-
+            cls.update_game_dict(_updated_data)
             pusher_client.trigger('markers', f'update-markers{_payload["gameid"]}', {**_new_payload, 'candisplay':all(any(c['player'] == i['playerid'] for c in _updated_data['board']) for i in _updated_data['players'])})
             return {'success':'True', 'candisplay':all(any(c['player'] == i['playerid'] for c in _updated_data['board']) for i in _updated_data['players'])}
         return {'success':'False'}
 
     @classmethod
     def get_all_markers(cls, _payload:dict) -> typing.List[dict]:
-        _data = json.load(open('game_data.json'))
+        _data = cls.load_game_dict(_payload)
         return _data['board']
 
     @classmethod
     def log_reaction(cls, _payload:dict) -> dict:
-        print('payload in log_reaction', _payload)
         #{'role': 'protester', 'gameid': 1, 'player': 3, 'reaction': 'violent'}
-        _data = json.load(open('game_data.json'))
+        _data = cls.load_game_dict(_payload)
         _user_convert = {int(i['playerid']):i['name'] for i in _data['players']}
         pusher_client.trigger('history', f'update-history{_payload["gameid"]}', {'html':f"<span class='reactor'>{_user_convert[int(_payload['player'])]}</span><span class='mini_badge badge_{_payload['role']}'>{_payload['role'].capitalize()}</span>   <span class='reacted_text'>reacted</span> <span class='reactor'>{_payload['reaction'].capitalize()}</span>"})
         new_data = {**_data, 'round':_data['round']+[_payload]}
@@ -163,11 +167,9 @@ class Game:
             new_score = {'police':_data['score']['police']+p2, 'protesters':_data['score']['protesters']+p1}
             pusher_client.trigger('scores', f'update-scores{_payload["gameid"]}', {**new_score, 'keepgoing':len(new_data['rounds'])+1 < 3})
             final_data = {**_data, 'rounds':_data['rounds']+[{'moves':new_data['round'], 'matrix_score':{'police':p2, 'protesters':p1}, 'reactions':{'police':pol_score, 'protesters':prot_score}, 'running_score':new_score}], 'round':[], 'score':new_score}
-            with open('game_data.json', 'w') as f:
-                json.dump(final_data, f)
+            cls.update_game_dict(final_data)
             return {'success':'True', **new_score, 'keepgoing':len(final_data['rounds']) < 3}
-        with open('game_data.json', 'w') as f:
-            json.dump(new_data, f)
+        cls.update_game_dict(new_data)
         return {'success':'False'}
 
     @classmethod
@@ -222,3 +224,7 @@ class Classes:
     @classmethod
     def get_maker_classes(cls, _maker:id) -> typing.List[typing.Callable]:
         return All_classes([_class({'id':int(a), **b}) for a, b in tigerSqlite.Sqlite('student_classes.db').get_id_data('classes') if int(b['owner']) == _maker])
+
+
+if __name__ == '__main__':
+    tigerSqlite.Sqlite('test_game_db.db').update('games', [('data', game_utilites.refresh_game_data())], [('id', 1)])
