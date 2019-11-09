@@ -18,8 +18,8 @@
         <div class='header'>
             <table style='width:100%'>
                 <tr>
-                    <td style='width:10%'><i class="fas fa-bars back_to_menu" style='color:white;font-size:2em'></i></td>
-                    <td style='width:45%'><div class='game_name' data-gameid='{{game.id}}'>{{game.name}}</div></td>
+                    <td style='width:5%'><i class="fas fa-bars back_to_menu" style='color:white;font-size:2em'></i></td>
+                    <td style='width:50%'><div class='game_name' data-gameid='{{game.id}}'>{{game.name}}</div></td>
                     <td style='width:15%'></td>
                     <td style='width:15%'><span class='badge badge_{{game.role}}'>{{game.display_role}}</span></td>
                     <td style='width:15%'><span class='logged_in_user' data-userid='{{game.player_id}}' data-role='{{game.role}}' data-tuser='{{game.loggedin}}' data-gamerole='{{game.chat_role_data}}'>{{game.loggedin}}</span></td>
@@ -75,47 +75,11 @@
                 </td>
                 <td style='width:60%'>
                     <div class='game_board_wrapper'>
-                        <div class='move_history'>
-                            <div class='history_round_label'>Round {{game.current_round}}</div>
-                            <div class='inner_move_history'>
-                                {%for event in game.game_history%}
-                                    {%for reaction in event%}
-                                        <div class='user_reaction'>
-                                            <span class='reactor'>{{reaction.name}}</span><span class='mini_badge badge_{{reaction.role}}'>{{reaction.role_text}}</span>   <span class='reacted_text'>reacted</span> <span class='reactor'>{{reaction.reaction}}</span>
-                                        </div>
-                                        <div style='height:5px'></div>
-                                    {%endfor%}
-                                    <div class='user_reaction'>
-                                            <span class='reactor'>End of Round {{event.round}}:</span><span class='current_score_display'><span class='current_score_num'>{{event.running_score_police}}</span><span class='current_score_num'> to </span><span class='current_score_num'>{{event.running_score_protester}}</span></span><span class='mini_badge badge_{{event.running_score_winner}}' style='margin-left:5px'>{{event.running_winner_text}}</span>
-                                    </div>
-                                {%endfor%}
-                                <!--
-                                <div class='user_reaction'>
-                                    <span class='reactor'>JoeP</span><span class='mini_badge badge_police'>Police</span>   <span class='reacted_text'>reacted</span> <span class='reactor'>Violently</span>
-                                </div>
-                                <div style='height:5px'></div>
-                                <div class='user_reaction'>
-                                        <span class='reactor'>JamesP</span><span class='mini_badge badge_protester'>Protester</span>   <span class='reacted_text'>reacted</span> <span class='reactor'>Violently</span>
-                                </div>
-                                <div style='height:5px'></div>
-                                <div class='user_reaction'>
-                                        <span class='reactor'>LillyP</span><span class='mini_badge badge_protester'>Protester</span>   <span class='reacted_text'>reacted</span> <span class='reactor'>Non-Violently</span>
-                                </div>
-                                <div style='height:5px'></div>
-                                
-                                <div class='user_reaction'>
-                                        <span class='reactor'>End of Round 2:</span><span class='current_score_display'><span class='current_score_num'>3</span><span class='current_score_num'> - </span><span class='current_score_num'>3</span></span><span class='mini_badge badge_protester' style='margin-left:5px'>Protesters</span>
-                                </div>
-                                -->
-                            </div>
-                            
-                        </div>
-                        <div style='height:10px'></div>
                         <div class='full_board'>
                             <table style='width:100%;margin:0 auto;'>
                                 <tr>
                                     <td style='width:10%;text-align:center;'><img src="/static/styles/eared-shield-1.svg" alt="police_badge" style='width:70%;height:30%;'></td>
-                                    <td style='width:35%;'>
+                                    <td style='width:30%;'>
                                         <div class='__police_score_display'>0</div>
                                         <!--
                                         <div class='entity_scores police_score_outer' data-entity='police' data-score='0'>
@@ -128,10 +92,10 @@
                                         </div>
                                         -->
                                     </td>
-                                    <td style='width:10%;'>
-                                        <div class='game_time'></div>
+                                    <td style='width:20%;'>
+                                        <div class='game_time'><div class="history_round_label">Round {{game.current_round}}</div></div>
                                     </td>
-                                    <td style='width:35%;'>
+                                    <td style='width:30%;'>
                                         
                                         <div class='__protester_score_display'>0</div>
                                         <!--
@@ -150,13 +114,34 @@
                                 </tr>
                             </table>
                             <div style='height:10px'></div>
-                            <div class='game_board'>
-                                <table class='game_board_table'>
-
-                                </table>
+                            <div class='game_board inner_move_history'>
+                                <div class='inner_board_dividor'></div>
+                                <div style='height:10px'></div>
+                                {%for event in game.game_history%}
+                                    {%for reaction in event%}
+                                        <div class='user_reaction'>
+                                            <span class='reactor'>{{reaction.name}}</span><span class='mini_badge badge_{{reaction.role}}'>{{reaction.role_text}}</span>   <span class='reacted_text'>reacted</span> <span class='reactor'>{{reaction.reaction}}</span>
+                                        </div>
+                                        <div style='height:10px'></div>
+                                    {%endfor%}
+                                    <div class='user_reaction'>
+                                            <span class='reactor end_of_round'>End of Round {{event.round}}:</span><span class='current_score_display'><span class='current_score_num'>{{event.running_score_police}}</span><span class='current_score_num'> to </span><span class='current_score_num'>{{event.running_score_protester}}</span></span><span class='mini_badge badge_{{event.running_score_winner}}' style='margin-left:5px;font-size:19px;'>{{event.running_winner_text}}</span>
+                                            <div style='height:15px'></div>
+                                            
+                                            <div style='height:15px'></div>
+                                            <div class="inner_board_dividor"></div>
+          
+                                            
+                                    </div>
+                                    <div style='height:10px'></div>
+                                {%endfor%}
                             </div>
                             <div style='height:20px'></div>
-                            <table style='width:55%;display:none;' class='reaction_display_table'>
+                            <div class='loader_display' style='display:none'>
+                                <div class='loader'></div>
+                            </div>
+                    
+                            <table style='width:55%;display:none;padding-left:15px;' class='reaction_display_table'>
                                 <tr>
                                     <td>
                                         <td style='width:50%'><div class='violence_level' data-reaction='violent'>Violent</div></td>
@@ -171,5 +156,72 @@
             </tr>
         </table>
         <div style='height:100px'></div>
+        <div class="modal" id="mission_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content mission_modal_body">
+                
+                <div class="modal-body">
+                    <table style='margin:0 auto;width:100%;'>
+                        <tr>
+                            <td style='width:12%;'><div class='content_entity_header'>Location:</div></td>
+                            <td style='width:88%;'>
+                                <table>
+                                    <tr>
+                                        <td><div class='content_entity_text' id='content_location'></div></td>
+                                        <td id='content_location_cursor'></td>
+                                    </tr>
+                                </table>
+                                
+                            </td>
+                        </tr>
+                    </table>
+                    <div style='height:10px'></div>
+                    <table style='margin:0 auto;width:100%;'>
+                            <tr>
+                                <td style='width:12%;'><div class='content_entity_header'>Date:</div></td>
+                                <td style='width:88%;'>
+                                        <table>
+                                                <tr>
+                                                    <td><div class='content_entity_text' id='content_date'></div></td>
+                                                    <td id='content_date_cursor'></td>
+                                                </tr>
+                                            </table>
+                                </td>
+                            </tr>
+                        </table>
+                    <div style='height:10px'></div>
+                    <table style='margin:0 auto;width:100%;'>
+                            <tr>
+                                <td style='width:12%;'><div class='content_entity_header'>Overview:</div></td>
+                                <td style='width:88%;'>
+                                        <table>
+                                                <tr>
+                                                    <td><div class='content_entity_text' id='content_overview'></div></td>
+                                                    <td id='content_overview_cursor'></td>
+                                                </tr>
+                                            </table>
+                                </td>
+                            </tr>
+                        </table>
+                    <div style='height:10px'></div>
+                    <table style='margin:0 auto;width:100%;'>
+                            <tr>
+                                <td style='width:12%;'><div class='content_entity_header'>Mission:</div></td>
+                                <td style='width:88%;'>
+                                        <table>
+                                                <tr>
+                                                    <td><div class='content_entity_text' id='content_mission'></div></td>
+                                                    <td id='content_mission_cursor'></td>
+                                                </tr>
+                                            </table>
+                                </td>
+                            </tr>
+                        </table>
+                    <div style='height:10px'></div>
+                </div>
+                
+              </div>
+            </div>
+          </div>
     </body>
 </html>
