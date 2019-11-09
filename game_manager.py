@@ -1,7 +1,7 @@
 import typing, json, game_utilites
-import pusher, collections, re, os
+import pusher, collections, re, os, csv
 import pandas as pd
-import user_manager, tigerSqlite
+import user_manager, tigerSqlite, content_manager
 pusher_client = pusher.Pusher(
   app_id='814342',
   key='f7e3f6c14176cdde1625',
@@ -57,16 +57,31 @@ class Game:
 
     def __init__(self, _payload:dict, _user:str) -> None:
         self.__dict__ = {**_payload, 'loggedin':_user}
-        self.game_role = [i for i in self.players if i['name'] == self.loggedin][0]
+        self.game_role, self.id = [i for i in self.players if (i['name'] == self.loggedin if isinstance(self.loggedin, str) else int(i['playerid']) == int(self.loggedin))][0], int(self.id)
+        self.game_content = None if not hasattr(self, 'content') or not isinstance(self.content, int) else content_manager.ContentManager.get_content([i['playerid'] for i in self.players if i['role'] == 'instructor'][0], self.content)
     @property
     def role(self):
         return self.game_role['role']
+
+
     @property
     def display_role(self):
         return self.role.capitalize()
     @property
     def player_id(self):
         return self.game_role['playerid']
+
+    @property
+    def game_name(self):
+        return self.game_role['name']
+
+    @property
+    def has_content(self):
+        return self.game_content is not None
+
+    @property
+    def has_links(self):
+        return self.has_content and self.game_content.has_links
 
     @property
     def is_instructor(self):
@@ -95,6 +110,11 @@ class Game:
         pass
 
     @classmethod
+    def load_game_from_db(cls, _id:int, _user:int) -> typing.Callable:
+        _r = [b for a, b in tigerSqlite.Sqlite('games.db').get_id_data('games') if int(a) == int(_id)]
+        return {'success':'False'} if not _r else cls(_r[0], _user)
+
+    @classmethod
     def get_chat_history(cls, _payload:dict) -> typing.List[typing.NamedTuple]:
         return list(map(_message, cls.load_game_dict(_payload)[f'{_payload["role"]}_chat']))
 
@@ -113,7 +133,7 @@ class Game:
     def game_history(self):
         _user_convert = {int(i['playerid']):i['name'] for i in self.players}
         yield from [Move(a, i, _user_convert) for i, a in enumerate(self.rounds, 1)]
-
+    
     @property
     def current_round(self):
         return len(self.rounds)+1
@@ -140,13 +160,13 @@ class Game:
         _data = cls.load_game_dict(_payload)
         if any(int(i['player']) == int(_payload['player']) for i in _data['board']):
             return {'success':'NA'}
-        if all(i['position'] != [_payload['position']['x'], _payload['position']['y']] for i in _data['board']):
-            _new_payload = {'player':_payload['player'], 'role':_payload['role'], 'position':[_payload['position']['x'], _payload['position']['y']]}
-            _updated_data = {**_data, 'board':_data['board']+[_new_payload]}
-            cls.update_game_dict(_updated_data)
-            pusher_client.trigger('markers', f'update-markers{_payload["gameid"]}', {**_new_payload, 'candisplay':all(any(c['player'] == i['playerid'] for c in _updated_data['board']) for i in _updated_data['players'])})
-            return {'success':'True', 'candisplay':all(any(c['player'] == i['playerid'] for c in _updated_data['board']) for i in _updated_data['players'])}
-        return {'success':'False'}
+        
+        _new_payload = {'player':_payload['player'], 'role':_payload['role']}
+        _updated_data = {**_data, 'board':_data['board']+[_new_payload]}
+        cls.update_game_dict(_updated_data)
+        pusher_client.trigger('markers', f'update-markers{_payload["gameid"]}', {**_new_payload, 'candisplay':all(any(c['player'] == i['playerid'] for c in _updated_data['board']) for i in _updated_data['players'])})
+        return {'success':'True', 'candisplay':all(any(c['player'] == i['playerid'] for c in _updated_data['board']) for i in _updated_data['players'])}
+        
 
     @classmethod
     def get_all_markers(cls, _payload:dict) -> typing.List[dict]:
@@ -206,7 +226,13 @@ class Classes:
     """
     @classmethod
     def csv_create_class(cls, _name:str, _filename:str, _maker:int) -> int:
-        pass
+        _data = csv.reader(open(f'class_rosters/{_filename}'))
+        _new_rows = [{'name':re.sub('^\s+|\s+$', '', a), 'email':re.sub('^\s+|\s+$', '', b), 'role':False} for a, b in _data]
+        final_rows = [user_manager.User.add_user(i).__dict__ for i in _new_rows]
+        _new_id = (lambda x:1 if not x else max(x)+1)([a for a, _ in tigerSqlite.Sqlite('student_classes.db').get_id_data('classes')])
+        tigerSqlite.Sqlite('student_classes.db').insert('classes', ('id', _new_id), ('data', {'name':_name, 'owner':_maker, 'students':[{'classid':i, **a} for i, a in enumerate(final_rows, 1)]}))
+        return _new_id
+        
     @classmethod
     def xlsx_create_class(cls, _name:str, _filename:str, _maker:int) -> int:
         _data = pd.read_excel(f'class_rosters/{_filename}')
